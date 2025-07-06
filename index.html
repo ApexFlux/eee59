@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals -->
-    <!-- Application Structure Plan: A responsive dashboard layout. The main feature is an interactive weekly calendar grid. To the side (or below on mobile), a bar chart visualizes the daily workload, and a legend provides details on courses and faculty. Filters for 'Day' and 'Class Type' allow users to dynamically query the schedule. This structure turns a static table into an interactive tool for planning and analysis, offering more value than a simple reprint of the original report. -->
+    <!-- Application Structure Plan: A responsive dashboard layout. The main feature is an interactive weekly calendar grid. To the side (or below on mobile), a bar chart visualizes the daily workload, and a legend provides details on courses and faculty. Filters for 'Day', 'Class Type', and 'Group' allow users to dynamically query the schedule. This structure turns a static table into an interactive tool for planning and analysis, offering more value than a simple reprint of the original report. -->
     <!-- Visualization & Content Choices: The primary schedule is presented as a CSS Grid for a clear, organized view (Goal: Organize). A Chart.js bar chart is used to compare daily class hours (Goal: Compare, Analyze), providing a quick visual summary of the student's workload. Interactive filters (buttons and dropdowns) and hover-triggered tooltips (Goal: Inform, Interact) allow for easy exploration of the data. All elements are created with HTML/CSS/JS and Chart.js (Canvas), confirming NO SVG/Mermaid. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -84,6 +84,15 @@
                     <option value="Lab">Lab</option>
                 </select>
             </div>
+            <div class="flex items-center gap-2">
+                <label for="group-filter" class="font-medium text-stone-600">Filter by Group:</label>
+                <select id="group-filter" class="bg-white border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5">
+                    <option value="all">All Groups</option>
+                    <option value="A">Group A</option>
+                    <option value="B">Group B</option>
+                    <option value="N/A">N/A (No Group)</option>
+                </select>
+            </div>
         </div>
 
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -117,19 +126,19 @@
     <script>
         const scheduleData = [
             { day: 'Sunday', start: '10:00', end: '13:00', courseCode: 'EEE 1102', courseName: 'Electrical Circuit Analysis Lab', group: 'A', faculty: 'IA, SMSI', type: 'Lab', color: 'bg-sky-100', borderColor: 'border-sky-500' },
-            { day: 'Sunday', start: '13:30', end: '14:50', courseCode: 'GED 1101', courseName: 'English for Technical Communication', faculty: 'MR', type: 'Lecture', color: 'bg-amber-100', borderColor: 'border-amber-500' },
-            { day: 'Sunday', start: '15:00', end: '16:20', courseCode: 'MAT 1103', courseName: 'Linear Algebra and Numerical Analysis', faculty: 'KCS', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Sunday', start: '13:30', end: '14:50', courseCode: 'GED 1101', courseName: 'English for Technical Communication', group: 'N/A', faculty: 'MR', type: 'Lecture', color: 'bg-amber-100', borderColor: 'border-amber-500' },
+            { day: 'Sunday', start: '15:00', end: '16:20', courseCode: 'MAT 1103', courseName: 'Linear Algebra and Numerical Analysis', group: 'N/A', faculty: 'KCS', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
             { day: 'Monday', start: '10:00', end: '13:00', courseCode: 'EEE 1104', courseName: 'Computer Aided Engineering Drawing', group: 'B', faculty: 'MAH, MH', type: 'Lab', color: 'bg-indigo-100', borderColor: 'border-indigo-500' },
-            { day: 'Monday', start: '13:30', end: '14:50', courseCode: 'MAT 1101', courseName: 'Differential and Integral Calculus', faculty: 'MJU', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
-            { day: 'Monday', start: '15:00', end: '16:20', courseCode: 'PHY 1101', courseName: 'Electricity and Magnetism', faculty: 'MJR', type: 'Lecture', color: 'bg-rose-100', borderColor: 'border-rose-500' },
-            { day: 'Tuesday', start: '13:30', end: '14:50', courseCode: 'GED 1101', courseName: 'English for Technical Communication', faculty: 'MR', type: 'Lecture', color: 'bg-amber-100', borderColor: 'border-amber-500' },
-            { day: 'Tuesday', start: '15:00', end: '16:20', courseCode: 'EEE 1101', courseName: 'Electrical Circuit Analysis', faculty: 'MHR', type: 'Lecture', color: 'bg-sky-100', borderColor: 'border-sky-500' },
+            { day: 'Monday', start: '13:30', end: '14:50', courseCode: 'MAT 1101', courseName: 'Differential and Integral Calculus', group: 'N/A', faculty: 'MJU', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Monday', start: '15:00', end: '16:20', courseCode: 'PHY 1101', courseName: 'Electricity and Magnetism', group: 'N/A', faculty: 'MJR', type: 'Lecture', color: 'bg-rose-100', borderColor: 'border-rose-500' },
+            { day: 'Tuesday', start: '13:30', end: '14:50', courseCode: 'GED 1101', courseName: 'English for Technical Communication', group: 'N/A', faculty: 'MR', type: 'Lecture', color: 'bg-amber-100', borderColor: 'border-amber-500' },
+            { day: 'Tuesday', start: '15:00', end: '16:20', courseCode: 'EEE 1101', courseName: 'Electrical Circuit Analysis', group: 'N/A', faculty: 'MHR', type: 'Lecture', color: 'bg-sky-100', borderColor: 'border-sky-500' },
             { day: 'Wednesday', start: '10:00', end: '13:00', courseCode: 'EEE 1102', courseName: 'Electrical Circuit Analysis Lab', group: 'B', faculty: 'IA, SMSI', type: 'Lab', color: 'bg-sky-100', borderColor: 'border-sky-500' },
             { day: 'Wednesday', start: '10:00', end: '13:00', courseCode: 'EEE 1104', courseName: 'Computer Aided Engineering Drawing', group: 'A', faculty: 'MAH, MH', type: 'Lab', color: 'bg-indigo-100', borderColor: 'border-indigo-500' },
-            { day: 'Wednesday', start: '13:30', end: '14:50', courseCode: 'MAT 1103', courseName: 'Linear Algebra and Numerical Analysis', faculty: 'KCS', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
-            { day: 'Wednesday', start: '15:00', end: '16:20', courseCode: 'PHY 1101', courseName: 'Electricity and Magnetism', faculty: 'MJR', type: 'Lecture', color: 'bg-rose-100', borderColor: 'border-rose-500' },
-            { day: 'Thursday', start: '13:30', end: '14:50', courseCode: 'MAT 1101', courseName: 'Differential and Integral Calculus', faculty: 'MJU', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
-            { day: 'Thursday', start: '15:00', end: '16:20', courseCode: 'EEE 1101', courseName: 'Electrical Circuit Analysis', faculty: 'MHR', type: 'Lecture', color: 'bg-sky-100', borderColor: 'border-sky-500' },
+            { day: 'Wednesday', start: '13:30', end: '14:50', courseCode: 'MAT 1103', courseName: 'Linear Algebra and Numerical Analysis', group: 'N/A', faculty: 'KCS', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Wednesday', start: '15:00', end: '16:20', courseCode: 'PHY 1101', courseName: 'Electricity and Magnetism', group: 'N/A', faculty: 'MJR', type: 'Lecture', color: 'bg-rose-100', borderColor: 'border-rose-500' },
+            { day: 'Thursday', start: '13:30', end: '14:50', courseCode: 'MAT 1101', courseName: 'Differential and Integral Calculus', group: 'N/A', faculty: 'MJU', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Thursday', start: '15:00', end: '16:20', courseCode: 'EEE 1101', courseName: 'Electrical Circuit Analysis', group: 'N/A', faculty: 'MHR', type: 'Lecture', color: 'bg-sky-100', borderColor: 'border-sky-500' },
         ];
 
         const facultyDetails = {
@@ -153,13 +162,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             const dayFilter = document.getElementById('day-filter');
             const typeFilter = document.getElementById('type-filter');
+            const groupFilter = document.getElementById('group-filter');
 
-            initChart(); // Initialize chart first
+            initChart();
             renderTimetable();
             renderDetailsList();
 
             dayFilter.addEventListener('change', renderTimetable);
             typeFilter.addEventListener('change', renderTimetable);
+            groupFilter.addEventListener('change', renderTimetable);
             
             highlightCurrentDay();
         });
@@ -175,6 +186,7 @@
             
             const dayFilterValue = document.getElementById('day-filter').value;
             const typeFilterValue = document.getElementById('type-filter').value;
+            const groupFilterValue = document.getElementById('group-filter').value;
 
             const filteredDays = days.filter(day => dayFilterValue === 'all' || day === dayFilterValue);
             
@@ -203,7 +215,8 @@
 
             const filteredSchedule = scheduleData.filter(item => 
                 (dayFilterValue === 'all' || item.day === dayFilterValue) &&
-                (typeFilterValue === 'all' || item.type === typeFilterValue)
+                (typeFilterValue === 'all' || item.type === typeFilterValue) &&
+                (groupFilterValue === 'all' || item.group === groupFilterValue || (groupFilterValue === 'N/A' && !item.group))
             );
 
             filteredSchedule.forEach(item => {
