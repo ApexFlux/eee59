@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Academic Timetable</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A responsive dashboard layout. The main feature is an interactive weekly calendar grid. To the side (or below on mobile), a bar chart visualizes the daily workload, and a legend provides details on courses and faculty. Filters for 'Day' and 'Class Type' allow users to dynamically query the schedule. This structure turns a static table into an interactive tool for planning and analysis, offering more value than a simple reprint of the original report. -->
+    <!-- Visualization & Content Choices: The primary schedule is presented as a CSS Grid for a clear, organized view (Goal: Organize). A Chart.js bar chart is used to compare daily class hours (Goal: Compare, Analyze), providing a quick visual summary of the student's workload. Interactive filters (buttons and dropdowns) and hover-triggered tooltips (Goal: Inform, Interact) allow for easy exploration of the data. All elements are created with HTML/CSS/JS and Chart.js (Canvas), confirming NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            max-height: 320px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 320px;
+            }
+        }
+        .tooltip {
+            position: absolute;
+            background-color: #27272a; /* zinc-800 */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .class-block:hover .tooltip {
+            opacity: 1;
+        }
+        .grid-background-lines {
+            background-image: linear-gradient(to bottom, #e7e5e4 1px, transparent 1px);
+            background-size: 100% 4rem;
+        }
+        .current-day {
+            background-color: #fefce8 !important; /* yellow-50 */
+            border-left: 4px solid #facc15; /* yellow-400 */
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-stone-800">1st Year, 1st Semester Timetable</h1>
+            <p class="text-stone-500 mt-2">An interactive dashboard to explore your B.Sc. (Engg.) 2025 schedule.</p>
+        </header>
+
+        <div id="controls" class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <div class="flex items-center gap-2">
+                <label for="day-filter" class="font-medium text-stone-600">Filter by Day:</label>
+                <select id="day-filter" class="bg-white border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5">
+                    <option value="all">All Days</option>
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="type-filter" class="font-medium text-stone-600">Filter by Type:</label>
+                <select id="type-filter" class="bg-white border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5">
+                    <option value="all">All Types</option>
+                    <option value="Lecture">Lecture</option>
+                    <option value="Lab">Lab</option>
+                </select>
+            </div>
+        </div>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+                <div class="relative">
+                    <div id="timetable-grid" class="grid grid-cols-1 sm:grid-cols-5 gap-px bg-stone-200 border border-stone-200 rounded-lg overflow-hidden">
+                        <!-- Headers will be generated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <aside class="flex flex-col gap-8">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-xl font-bold text-stone-800 mb-1">Weekly Workload</h2>
+                    <p class="text-stone-500 mb-4 text-sm">Total class hours per day. Update the filters to see how your workload changes.</p>
+                    <div class="chart-container">
+                        <canvas id="workloadChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+                    <h2 class="text-xl font-bold text-stone-800 mb-4">Course & Faculty Details</h2>
+                    <ul id="details-list" class="space-y-3 text-sm">
+                       <!-- Details will be generated by JS -->
+                    </ul>
+                </div>
+            </aside>
+        </main>
+
+    </div>
+
+    <script>
+        const scheduleData = [
+            { day: 'Sunday', start: '10:00', end: '13:00', courseCode: 'EEE 1102', courseName: 'Electrical Circuit Analysis Lab', group: 'A', faculty: 'IA, SMSI', type: 'Lab', color: 'bg-sky-100', borderColor: 'border-sky-500' },
+            { day: 'Sunday', start: '13:30', end: '14:50', courseCode: 'GED 1101', courseName: 'English for Technical Communication', faculty: 'MR', type: 'Lecture', color: 'bg-amber-100', borderColor: 'border-amber-500' },
+            { day: 'Sunday', start: '15:00', end: '16:20', courseCode: 'MAT 1103', courseName: 'Linear Algebra and Numerical Analysis', faculty: 'KCS', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Monday', start: '10:00', end: '13:00', courseCode: 'EEE 1104', courseName: 'Computer Aided Engineering Drawing', group: 'B', faculty: 'MAH, MH', type: 'Lab', color: 'bg-indigo-100', borderColor: 'border-indigo-500' },
+            { day: 'Monday', start: '13:30', end: '14:50', courseCode: 'MAT 1101', courseName: 'Differential and Integral Calculus', faculty: 'MJU', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Monday', start: '15:00', end: '16:20', courseCode: 'PHY 1101', courseName: 'Electricity and Magnetism', faculty: 'MJR', type: 'Lecture', color: 'bg-rose-100', borderColor: 'border-rose-500' },
+            { day: 'Tuesday', start: '13:30', end: '14:50', courseCode: 'GED 1101', courseName: 'English for Technical Communication', faculty: 'MR', type: 'Lecture', color: 'bg-amber-100', borderColor: 'border-amber-500' },
+            { day: 'Tuesday', start: '15:00', end: '16:20', courseCode: 'EEE 1101', courseName: 'Electrical Circuit Analysis', faculty: 'MHR', type: 'Lecture', color: 'bg-sky-100', borderColor: 'border-sky-500' },
+            { day: 'Wednesday', start: '10:00', end: '13:00', courseCode: 'EEE 1102', courseName: 'Electrical Circuit Analysis Lab', group: 'B', faculty: 'IA, SMSI', type: 'Lab', color: 'bg-sky-100', borderColor: 'border-sky-500' },
+            { day: 'Wednesday', start: '10:00', end: '13:00', courseCode: 'EEE 1104', courseName: 'Computer Aided Engineering Drawing', group: 'A', faculty: 'MAH, MH', type: 'Lab', color: 'bg-indigo-100', borderColor: 'border-indigo-500' },
+            { day: 'Wednesday', start: '13:30', end: '14:50', courseCode: 'MAT 1103', courseName: 'Linear Algebra and Numerical Analysis', faculty: 'KCS', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Wednesday', start: '15:00', end: '16:20', courseCode: 'PHY 1101', courseName: 'Electricity and Magnetism', faculty: 'MJR', type: 'Lecture', color: 'bg-rose-100', borderColor: 'border-rose-500' },
+            { day: 'Thursday', start: '13:30', end: '14:50', courseCode: 'MAT 1101', courseName: 'Differential and Integral Calculus', faculty: 'MJU', type: 'Lecture', color: 'bg-teal-100', borderColor: 'border-teal-500' },
+            { day: 'Thursday', start: '15:00', end: '16:20', courseCode: 'EEE 1101', courseName: 'Electrical Circuit Analysis', faculty: 'MHR', type: 'Lecture', color: 'bg-sky-100', borderColor: 'border-sky-500' },
+        ];
+
+        const facultyDetails = {
+            'MHR': 'Md. Habibur Rahman', 'MJR': 'M. Junaebur Rashid', 'SMSI': 'Sazzad M. S. Imran', 'IA': 'Imtiaz Ahmed',
+            'MAH': 'Md. Ahsan Habib', 'MH': 'Mainul Hossain', 'KCS': 'Kajal Chandra Saha', 'MJU': 'Md. Jasim Uddin', 'MR': 'Mizanur Rahman'
+        };
+        
+        const courseDetails = {
+            'EEE 1101': { name: 'Electrical Circuit Analysis', room: '208' },
+            'EEE 1102': { name: 'Electrical Circuit Analysis Laboratory', room: '301' },
+            'MAT 1103': { name: 'Linear Algebra and Numerical Analysis', room: '208' },
+            'GED 1101': { name: 'English for Technical Communication', room: '208' },
+            'PHY 1101': { name: 'Electricity and Magnetism', room: '208' },
+            'MAT 1101': { name: 'Differential and Integral Calculus', room: '208' },
+            'EEE 1104': { name: 'Computer Aided Engineering Drawing', room: '206' }
+        };
+
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
+        let workloadChart;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const dayFilter = document.getElementById('day-filter');
+            const typeFilter = document.getElementById('type-filter');
+
+            initChart(); // Initialize chart first
+            renderTimetable();
+            renderDetailsList();
+
+            dayFilter.addEventListener('change', renderTimetable);
+            typeFilter.addEventListener('change', renderTimetable);
+            
+            highlightCurrentDay();
+        });
+
+        function timeToMinutes(time) {
+            const [hours, minutes] = time.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function renderTimetable() {
+            const grid = document.getElementById('timetable-grid');
+            grid.innerHTML = '';
+            
+            const dayFilterValue = document.getElementById('day-filter').value;
+            const typeFilterValue = document.getElementById('type-filter').value;
+
+            const filteredDays = days.filter(day => dayFilterValue === 'all' || day === dayFilterValue);
+            
+            if (window.innerWidth >= 640) {
+                 grid.style.gridTemplateColumns = `repeat(${filteredDays.length}, minmax(0, 1fr))`;
+            } else {
+                 grid.style.gridTemplateColumns = 'minmax(0, 1fr)';
+            }
+
+            filteredDays.forEach(day => {
+                const dayColumn = document.createElement('div');
+                dayColumn.className = `day-column bg-stone-50 relative grid-background-lines`;
+                dayColumn.dataset.day = day;
+
+                const header = document.createElement('div');
+                header.className = 'text-center font-bold p-3 bg-white text-stone-700 sticky top-0 z-10 border-b border-stone-200';
+                header.textContent = day;
+                dayColumn.appendChild(header);
+                
+                const timeWrapper = document.createElement('div');
+                timeWrapper.className = "relative h-[48rem]"; // 12 hours * 4rem/hour
+                dayColumn.appendChild(timeWrapper);
+
+                grid.appendChild(dayColumn);
+            });
+
+            const filteredSchedule = scheduleData.filter(item => 
+                (dayFilterValue === 'all' || item.day === dayFilterValue) &&
+                (typeFilterValue === 'all' || item.type === typeFilterValue)
+            );
+
+            filteredSchedule.forEach(item => {
+                const dayColumn = grid.querySelector(`.day-column[data-day="${item.day}"]`);
+                if (!dayColumn) return;
+
+                const timeWrapper = dayColumn.querySelector('.relative.h-\\[48rem\\]');
+
+                const startMinutes = timeToMinutes(item.start);
+                const endMinutes = timeToMinutes(item.end);
+                
+                const topOffset = ((startMinutes - (9 * 60)) / 60) * 4;
+                const height = ((endMinutes - startMinutes) / 60) * 4;
+
+                const block = document.createElement('div');
+                block.className = `class-block absolute w-full p-2 rounded-lg border-l-4 shadow-sm transition-all duration-200 ${item.color} ${item.borderColor}`;
+                block.style.top = `${topOffset}rem`;
+                block.style.height = `${height}rem`;
+
+                block.innerHTML = `
+                    <p class="font-semibold text-xs leading-tight">${item.courseCode}</p>
+                    <p class="text-xs opacity-80">${item.start} - ${item.end}</p>
+                    <div class="tooltip">
+                        <strong class="block">${item.courseName} ${item.group ? `(Group ${item.group})` : ''}</strong>
+                        Faculty: ${item.faculty}<br>
+                        Room: ${courseDetails[item.courseCode]?.room || 'N/A'}
+                    </div>
+                `;
+                
+                const overlapping = Array.from(timeWrapper.children).filter(child => {
+                    const childTop = parseFloat(child.style.top);
+                    const childHeight = parseFloat(child.style.height);
+                    return (topOffset < childTop + childHeight && topOffset + height > childTop);
+                });
+
+                if (overlapping.length > 0) {
+                     block.style.width = `calc(50% - 4px)`;
+                     overlapping[0].style.width = `calc(50% - 4px)`;
+                     block.style.left = '50%';
+                }
+
+
+                timeWrapper.appendChild(block);
+            });
+            updateChart(filteredSchedule);
+            highlightCurrentDay();
+        }
+        
+        function highlightCurrentDay() {
+            const today = new Date().toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
+            const dayColumns = document.querySelectorAll('.day-column');
+            dayColumns.forEach(col => {
+                col.classList.remove('current-day');
+                if (col.dataset.day === today) {
+                    col.classList.add('current-day');
+                }
+            });
+        }
+        
+        function renderDetailsList() {
+            const list = document.getElementById('details-list');
+            list.innerHTML = '';
+            
+            const uniqueCourses = [...new Map(scheduleData.map(item => [item.courseCode, item])).values()];
+            uniqueCourses.forEach(course => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center gap-3';
+                const colorDiv = document.createElement('div');
+                colorDiv.className = `w-4 h-4 rounded-full ${course.color}`;
+                li.appendChild(colorDiv);
+                
+                const textDiv = document.createElement('div');
+                textDiv.innerHTML = `<span class="font-semibold text-stone-700">${course.courseCode}:</span> <span class="text-stone-600">${course.courseName}</span>`;
+                li.appendChild(textDiv);
+                
+                list.appendChild(li);
+            });
+            
+            const hr = document.createElement('hr');
+            hr.className = 'my-4';
+            list.appendChild(hr);
+            
+            Object.entries(facultyDetails).forEach(([abbr, name]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="font-semibold text-stone-700">${abbr}:</span> <span class="text-stone-600">${name}</span>`;
+                list.appendChild(li);
+            });
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('workloadChart').getContext('2d');
+            workloadChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Class Hours',
+                        data: [],
+                        backgroundColor: 'rgba(217, 119, 6, 0.2)', /* amber-500 */
+                        borderColor: 'rgba(217, 119, 6, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Hours',
+                                color: '#78716c' // stone-500
+                            },
+                            grid: {
+                                color: '#f5f5f4' // stone-100
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#27272a', /* zinc-800 */
+                            titleFont: { weight: 'bold' },
+                            bodyFont: { weight: 'normal' },
+                            displayColors: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart(data) {
+            const workload = days.map(day => {
+                const totalMinutes = data
+                    .filter(item => item.day === day)
+                    .reduce((acc, item) => {
+                        return acc + (timeToMinutes(item.end) - timeToMinutes(item.start));
+                    }, 0);
+                return totalMinutes / 60;
+            });
+
+            workloadChart.data.labels = days;
+            workloadChart.data.datasets[0].data = workload;
+            workloadChart.update();
+        }
+    </script>
+</body>
+</html>
