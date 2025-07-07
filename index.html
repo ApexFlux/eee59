@@ -171,6 +171,13 @@
             return hours * 60 + minutes;
         }
 
+        function formatTimeTo12Hr(time24) {
+            const [hours, minutes] = time24.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const hours12 = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+            return `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+        }
+
         function renderTimetable() {
             const grid = document.getElementById('timetable-grid');
             grid.innerHTML = '';
@@ -211,18 +218,21 @@
                 
                 let isGroupMatch = false;
                 if (groupFilterValue === 'all') {
-                    isGroupMatch = true; // Show all groups, including N/A
+                    // If 'All Groups' is selected, show group-specific classes (A or B) and N/A classes.
+                    // For lectures (N/A group), we want them to appear only once.
+                    isGroupMatch = (item.group === 'A' || item.group === 'B' || item.group === 'N/A');
                 } else if (groupFilterValue === 'N/A') {
-                    isGroupMatch = (item.group === 'N/A'); // Only show N/A
+                    // If 'N/A' is selected, only show classes with group 'N/A'.
+                    isGroupMatch = (item.group === 'N/A');
                 } else {
-                    isGroupMatch = (item.group === groupFilterValue || item.group === 'N/A'); // Show specific group or N/A
+                    // If 'Group A' or 'Group B' is selected, show classes for that specific group AND classes with group 'N/A'.
+                    isGroupMatch = (item.group === groupFilterValue || item.group === 'N/A');
                 }
 
                 if (isDayMatch && isTypeMatch && isGroupMatch) {
-                    // Create a unique identifier for each class to prevent duplicates
-                    // For lectures (type 'N/A'), we want them to show once regardless of group filter 'A' or 'B'
-                    // For labs, they are group specific, so their group is part of the identifier
-                    const uniqueId = `${item.day}-${item.start}-${item.end}-${item.courseCode}-${item.type === 'Lecture' ? 'N/A' : item.group}`;
+                    // Create a unique identifier. For lectures (group 'N/A'), treat them as the same regardless of
+                    // which group filter (A or B) might make them eligible. This prevents duplication.
+                    const uniqueId = `${item.day}-${item.start}-${item.end}-${item.courseCode}-${item.type === 'Lecture' ? 'Lecture_Common' : item.group}`;
                     if (!displayedItems.has(uniqueId)) {
                         displayedItems.add(uniqueId);
                         return true;
@@ -250,7 +260,7 @@
 
                 block.innerHTML = `
                     <p class="font-semibold text-xs leading-tight">${item.courseCode}</p>
-                    <p class="text-xs opacity-80">${item.start} - ${item.end}</p>
+                    <p class="text-xs opacity-80">${formatTimeTo12Hr(item.start)} - ${formatTimeTo12Hr(item.end)}</p>
                     <div class="tooltip">
                         <strong class="block">${item.courseName} ${item.group && item.group !== 'N/A' ? `(Group ${item.group})` : ''}</strong>
                         Faculty: ${item.faculty}<br>
