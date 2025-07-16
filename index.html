@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Materials Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid #eaeaea;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .description {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #eee;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .card p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Course Materials Hub</h1>
+        <p class="description">Central repository for all course materials and schedules</p>
+    </header>
+
+    <main>
+        <div class="card-container">
+            <!-- Circuit Analysis Card -->
+            <div class="card">
+                <h3>Circuit Analysis</h3>
+                <p>Course planner and schedule for Circuit Analysis</p>
+                <a href="Circuit-Analysis-Course-Planner.html" class="btn">View Planner</a>
+            </div>
+            
+            <!-- Math Structure Card -->
+            <div class="card">
+                <h3>Math Course Structure</h3>
+                <p>Detailed structure of mathematics courses</p>
+                <a href="math%20course%20structure.html" class="btn">View Structure</a>
+            </div>
+            
+            <!-- Weekly Schedule Card -->
+            <div class="card">
+                <h3>Math Weekly Schedule</h3>
+                <p>Timetable and weekly planning for math courses</p>
+                <a href="math%20weekly%20schedule" class="btn">View Schedule</a>
+            </div>
+            
+            <!-- Routine Card -->
+            <div class="card">
+                <h3>Class Routine</h3>
+                <p>Detailed class schedule and timetable</p>
+                <a href="routine.html" class="btn">View Routine</a>
+            </div>
+            
+            <!-- Documentation Card -->
+            <div class="card">
+                <h3>Documentation</h3>
+                <p>Project documentation and README</p>
+                <a href="README.md" class="btn">View README</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Course Materials Repository | Updated automatically</p>
+    </footer>
+</body>
+</html>
