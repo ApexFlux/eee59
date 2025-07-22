@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oxford IPA Pronunciation Dictionary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            color: white;
+            animation: fadeIn 1s ease;
+            position: relative;
+            overflow: hidden;
+            background: rgba(26, 42, 108, 0.8);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(26, 42, 108, 0.9), rgba(178, 31, 31, 0.7));
+            opacity: 0.9;
+            z-index: -1;
+            border-radius: 15px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            position: relative;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            animation: slideUp 0.8s ease;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        #search {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+        }
+        
+        #search:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            box-shadow: 0 4px 20px rgba(26, 42, 108, 0.3);
+        }
+        
+        .filter-options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: #1a2a6c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(26, 42, 108, 0.3);
+        }
+        
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            max-width: 1000px;
+            animation: fadeIn 1.2s ease;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            position: sticky;
+            top: 0;
+            background: #1a2a6c;
+            color: white;
+            z-index: 10;
+        }
+        
+        th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        th:first-child {
+            border-top-left-radius: 15px;
+        }
+        
+        th:last-child {
+            border-top-right-radius: 15px;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #e9ecef;
+            transition: background 0.3s ease;
+        }
+        
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        tbody tr:hover {
+            background: #f1f3ff;
+        }
+        
+        td {
+            padding: 15px;
+            font-size: 1.05rem;
+            vertical-align: middle;
+        }
+        
+        td:first-child {
+            font-weight: 600;
+            color: #1a2a6c;
+            width: 15%;
+        }
+        
+        .ipa {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 500;
+            color: #b21f1f;
+            width: 15%;
+        }
+        
+        .notes {
+            font-size: 0.95rem;
+            color: #495057;
+            width: 35%;
+        }
+        
+        .audio-cell {
+            width: 20%;
+        }
+        
+        .audio-btn {
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px 0;
+        }
+        
+        .audio-btn:hover {
+            background: #b21f1f;
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(178, 31, 31, 0.3);
+        }
+        
+        .audio-btn-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .audio-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1a2a6c;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 25px;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+        
+        .counter {
+            background: #ffd700;
+            color: #1a2a6c;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.1rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .audio-highlight {
+            animation: pulse 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                padding: 20px 15px;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            th, td {
+                padding: 12px 10px;
+                font-size: 0.95rem;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .audio-btn-group {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+        
+        .init-message {
+            text-align: center;
+            padding: 20px;
+            color: #1a2a6c;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-book"></i>
+            </div>
+            <h1>Oxford IPA Pronunciation Dictionary</h1>
+            <p>Comprehensive guide to British and American English pronunciations with audio examples and IPA transcriptions</p>
+        </header>
+        
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Search for any word (e.g. 'chair', 'king', 'rough')...">
+                <button class="filter-btn" onclick="focusSearch()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            
+            <div class="filter-options">
+                <button class="filter-btn active" onclick="filterWords('all')"><i class="fas fa-list"></i> All Words</button>
+                <button class="filter-btn" onclick="filterWords('vowel')"><i class="fas fa-volume-up"></i> Vowel Variations</button>
+                <button class="filter-btn" onclick="filterWords('consonant')"><i class="fas fa-microphone"></i> Consonant Features</button>
+                <button class="filter-btn" onclick="filterWords('irregular')"><i class="fas fa-star"></i> Irregular Pronunciations</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>UK IPA</th>
+                        <th>US IPA</th>
+                        <th>Key Pronunciation Notes</th>
+                        <th>Listen</th>
+                    </tr>
+                </thead>
+                <tbody id="ipaTable">
+                    <!-- Words will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="counter">
+            Showing <span id="wordCount">65</span> English words with IPA transcriptions
+        </div>
+        
+        <div class="footer">
+            <p>Data sourced from Oxford English Dictionaries | IPA transcriptions follow Oxford standards</p>
+            <p>© 2023 Oxford Phonetics Reference | For educational purposes</p>
+        </div>
+    </div>
+
+    <script>
+        // IPA data array with audio functionality
+        const ipaData = [
+            { word: "Able", uk: "/ˈeɪ.bl̩/", us: "/ˈeɪ.bəl/", notes: "Syllabic /l/ (UK) vs. schwa /ə/ (US)" },
+            { word: "Basic", uk: "/ˈbeɪ.sɪk/", us: "/ˈbeɪ.sɪk/", notes: "Identical; /eɪ/ diphthong" },
+            { word: "Table", uk: "/ˈteɪ.bl̩/", us: "/ˈteɪ.bəl/", notes: "Syllabic /l/ (UK) vs. schwa + /l/ (US)" },
+            { word: "Pound", uk: "/paʊnd/", us: "/paʊnd/", notes: "/aʊ/ diphthong; currency/weight" },
+            { word: "Page", uk: "/peɪdʒ/", us: "/peɪdʒ/", notes: "/eɪ/ + /dʒ/; identical" },
+            { word: "Shame", uk: "/ʃeɪm/", us: "/ʃeɪm/", notes: "/ʃ/ onset; /eɪ/ diphthong" },
+            { word: "Seed", uk: "/siːd/", us: "/siːd/", notes: "Long /iː/ vowel" },
+            { word: "Cake", uk: "/keɪk/", us: "/keɪk/", notes: "/eɪ/ diphthong; identical" },
+            { word: "Vision", uk: "/ˈvɪʒ.ən/", us: "/ˈvɪʒ.ən/", notes: "/ʒ/ medial sound; stress on 1st syllable" },
+            { word: "Chop", uk: "/tʃɒp/", us: "/tʃɑːp/", notes: "UK /ɒ/ vs. US /ɑː/ vowel" },
+            { word: "Bank", uk: "/bæŋk/", us: "/bæŋk/", notes: "/æ/ vowel; /ŋk/ cluster" },
+            { word: "Child", uk: "/tʃaɪld/", us: "/tʃaɪld/", notes: "/aɪ/ diphthong; identical" },
+            { word: "Chair", uk: "/tʃeər/", us: "/tʃer/", notes: "UK /eə/ vs. US /e/ + /r/" },
+            { word: "King", uk: "/kɪŋ/", us: "/kɪŋ/", notes: "/ɪ/ vowel; /ŋ/ nasal" },
+            { word: "Sing", uk: "/sɪŋ/", us: "/sɪŋ/", notes: "Identical; /ŋ/ final sound" },
+            { word: "Care", uk: "/keər/", us: "/ker/", notes: "UK /eə/ vs. US /e/ + /r/" },
+            { word: "Same", uk: "/seɪm/", us: "/seɪm/", notes: "/eɪ/ diphthong; identical" },
+            { word: "Clash", uk: "/klæʃ/", us: "/klæʃ/", notes: "/æ/ vowel; /ʃ/ fricative" },
+            { word: "Blank", uk: "/blæŋk/", us: "/blæŋk/", notes: "/æ/ + /ŋk/ cluster" },
+            { word: "Rough", uk: "/rʌf/", us: "/rʌf/", notes: "/ʌ/ vowel; /f/ final (silent 'gh')" },
+            { word: "Tough", uk: "/tʌf/", us: "/tʌf/", notes: "/t/ onset; /ʌ/ vowel" },
+            { word: "Doctor", uk: "/ˈdɒk.tər/", us: "/ˈdɑːk.tər/", notes: "UK /ɒ/ vs. US /ɑː/; stress on 1st syllable" },
+            { word: "Thank", uk: "/θæŋk/", us: "/θæŋk/", notes: "/θ/ onset; /æ/ vowel" },
+            { word: "Thing", uk: "/θɪŋ/", us: "/θɪŋ/", notes: "/θ/ onset; /ɪ/ + /ŋ/" },
+            { word: "Blood", uk: "/blʌd/", us: "/blʌd/", notes: "/bl/ cluster; /ʌ/ vowel" },
+            { word: "Flood", uk: "/flʌd/", us: "/flʌd/", notes: "Identical to 'blood'" },
+            { word: "Measure", uk: "/ˈmeʒ.ər/", us: "/ˈmeʒ.ər/", notes: "/ʒ/ medial; stress on 1st syllable" },
+            { word: "Donor", uk: "/ˈdəʊ.nər/", us: "/ˈdoʊ.nər/", notes: "UK /əʊ/ vs. US /oʊ/ diphthong" },
+            { word: "Anything", uk: "/ˈen.i.θɪŋ/", us: "/ˈen.i.θɪŋ/", notes: "Stress on 1st syllable; /θ/ sound" },
+            { word: "Out", uk: "/aʊt/", us: "/aʊt/", notes: "/aʊ/ diphthong; identical" },
+            { word: "Evil", uk: "/ˈiː.vl̩/", us: "/ˈiː.vəl/", notes: "Syllabic /l/ (UK) vs. schwa (US)" },
+            { word: "Father", uk: "/ˈfɑː.ðər/", us: "/ˈfɑː.ðər/", notes: "/ɑː/ vowel; identical" },
+            { word: "Bread", uk: "/bred/", us: "/bred/", notes: "/e/ vowel; silent 'a'" },
+            { word: "Break", uk: "/breɪk/", us: "/breɪk/", notes: "/eɪ/ diphthong; identical to 'cake'" },
+            { word: "Basis", uk: "/ˈbeɪ.sɪs/", us: "/ˈbeɪ.sɪs/", notes: "Identical to 'basic'" },
+            { word: "Sure", uk: "/ʃɔːr/", us: "/ʃʊr/", notes: "UK /ɔː/ vs. US /ʊ/ + /r/" },
+            { word: "Blossom", uk: "/ˈblɒs.əm/", us: "/ˈblɑː.səm/", notes: "UK /ɒ/ vs. US /ɑː/; stress on 1st syllable" },
+            { word: "Chief", uk: "/tʃiːf/", us: "/tʃiːf/", notes: "Long /iː/ vowel" },
+            { word: "English", uk: "/ˈɪŋ.ɡlɪʃ/", us: "/ˈɪŋ.ɡlɪʃ/", notes: "/ŋɡ/ cluster; stress on 1st syllable" },
+            { word: "Angel", uk: "/ˈeɪn.dʒəl/", us: "/ˈeɪn.dʒəl/", notes: "/eɪ/ + /ndʒ/; schwa /ə/" },
+            { word: "Haughty", uk: "/ˈhɔː.ti/", us: "/ˈhɑː.t̬i/", notes: "UK /ɔː/ vs. US /ɑː/; glottal stop in US (t̬)" },
+            { word: "Scene", uk: "/siːn/", us: "/siːn/", notes: "Long /iː/; silent 'c'" },
+            { word: "Wealthy", uk: "/ˈwel.θi/", us: "/ˈwel.θi/", notes: "/θ/ sound; stress on 1st syllable" },
+            { word: "Exam", uk: "/ɪɡˈzæm/", us: "/ɪɡˈzæm/", notes: "Stress on 2nd syllable; /ɡz/ cluster" },
+            { word: "Stone", uk: "/stəʊn/", us: "/stoʊn/", notes: "UK /əʊ/ vs. US /oʊ/ diphthong" },
+            { word: "Cloud", uk: "/klaʊd/", us: "/klaʊd/", notes: "/aʊ/ diphthong" },
+            { word: "Slash", uk: "/slæʃ/", us: "/slæʃ/", notes: "/æ/ vowel; /ʃ/ fricative" },
+            { word: "Mother", uk: "/ˈmʌð.ər/", us: "/ˈmʌð.ər/", notes: "/ʌ/ vowel; /ð/ sound" },
+            { word: "Bridge", uk: "/brɪdʒ/", us: "/brɪdʒ/", notes: "/ɪ/ vowel; /dʒ/ final sound" },
+            { word: "Peer", uk: "/pɪər/", us: "/pɪr/", notes: "UK /ɪə/ vs. US /ɪ/ + /r/" },
+            { word: "Cottage", uk: "/ˈkɒt.ɪdʒ/", us: "/ˈkɑː.t̬ɪdʒ/", notes: "UK /ɒ/ vs. US /ɑː/; glottal stop (t̬) in US" },
+            { word: "Woman", uk: "/ˈwʊm.ən/", us: "/ˈwʊm.ən/", notes: "/ʊ/ vowel; stress on 1st syllable" },
+            { word: "Women", uk: "/ˈwɪm.ɪn/", us: "/ˈwɪm.ɪn/", notes: "/ɪ/ vowel (irregular plural)" },
+            { word: "Arm", uk: "/ɑːm/", us: "/ɑːrm/", notes: "UK /ɑː/ vs. US /ɑːr/ (rhotic)" },
+            { word: "Health", uk: "/helθ/", us: "/helθ/", notes: "/θ/ final sound; /e/ vowel" },
+            { word: "White", uk: "/waɪt/", us: "/waɪt/", notes: "/aɪ/ diphthong" },
+            { word: "What", uk: "/wɒt/", us: "/wʌt/", notes: "UK /ɒ/ vs. US /ʌ/ vowel" },
+            { word: "Where", uk: "/weər/", us: "/wer/", notes: "UK /eə/ vs. US /e/ + /r/" },
+            { word: "Colonel", uk: "/ˈkɜː.nl̩/", us: "/ˈkɜːr.nəl/", notes: "Silent 'olo'; /ɜː/ vowel (irregular)" },
+            { word: "General", uk: "/ˈdʒen.ər.əl/", us: "/ˈdʒen.ər.əl/", notes: "/dʒ/ onset; schwa /ə/" },
+            { word: "Promise", uk: "/ˈprɒm.ɪs/", us: "/ˈprɑː.mɪs/", notes: "UK /ɒ/ vs. US /ɑː/; stress on 1st syllable" },
+            { word: "Extra", uk: "/ˈek.strə/", us: "/ˈek.strə/", notes: "/ks/ cluster; schwa /ə/" },
+            { word: "Moon", uk: "/muːn/", us: "/muːn/", notes: "Long /uː/ vowel" },
+            { word: "Drink", uk: "/drɪŋk/", us: "/drɪŋk/", notes: "/ɪ/ vowel; /ŋk/ cluster" },
+            { word: "Wear", uk: "/weər/", us: "/wer/", notes: "UK /eə/ vs. US /e/ + /r/" }
+        ];
+
+        // Function to populate the table
+        function populateTable(data) {
+            const tableBody = document.getElementById('ipaTable');
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="init-message">No words found matching your search</td></tr>';
+                return;
+            }
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.word}</td>
+                    <td class="ipa">${item.uk}</td>
+                    <td class="ipa">${item.us}</td>
+                    <td class="notes">${item.notes}</td>
+                    <td class="audio-cell">
+                        <div class="audio-btn-group">
+                            <button class="audio-btn" onclick="speakWord('${item.word}', 'UK', this)" title="UK Pronunciation">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <button class="audio-btn" onclick="speakWord('${item.word}', 'US', this)" title="US Pronunciation">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            document.getElementById('wordCount').textContent = data.length;
+        }
+        
+        // Speech synthesis function
+        function speakWord(word, accent, button) {
+            // Add visual feedback
+            button.classList.add('audio-highlight');
+            setTimeout(() => {
+                button.classList.remove('audio-highlight');
+            }, 500);
+            
+            // Create speech synthesis
+            const utterance = new SpeechSynthesisUtterance(word);
+            
+            // Set accent
+            if (accent === 'UK') {
+                utterance.lang = 'en-GB';
+                utterance.rate = 0.95; // Slightly slower for UK
+            } else {
+                utterance.lang = 'en-US';
+            }
+            
+            // Configure voice
+            const voices = speechSynthesis.getVoices();
+            const preferredVoice = accent === 'UK' ? 
+                voices.find(v => v.lang === 'en-GB' && v.name.includes('Female')) || 
+                voices.find(v => v.lang === 'en-GB') :
+                voices.find(v => v.lang === 'en-US' && v.name.includes('Female')) || 
+                voices.find(v => v.lang === 'en-US');
+            
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            // Speak the word
+            speechSynthesis.speak(utterance);
+        }
+        
+        // Initial table population when page loads
+        window.onload = function() {
+            populateTable(ipaData);
+            
+            // Load voices when they become available
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    // Voices are now loaded
+                };
+            }
+            
+            // Search functionality
+            document.getElementById('search').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const filteredData = ipaData.filter(item => 
+                    item.word.toLowerCase().includes(searchTerm) ||
+                    item.uk.toLowerCase().includes(searchTerm) ||
+                    item.us.toLowerCase().includes(searchTerm) ||
+                    item.notes.toLowerCase().includes(searchTerm)
+                );
+                populateTable(filteredData);
+            });
+        };
+        
+        // Filter functions
+        function filterWords(category) {
+            let filteredData = [];
+            
+            switch(category) {
+                case 'vowel':
+                    filteredData = ipaData.filter(item => 
+                        item.notes.includes('diphthong') || 
+                        item.notes.includes('vowel') ||
+                        item.notes.includes('schwa')
+                    );
+                    break;
+                case 'consonant':
+                    filteredData = ipaData.filter(item => 
+                        item.notes.includes('consonant') || 
+                        item.notes.includes('cluster') ||
+                        item.notes.includes('nasal') ||
+                        item.notes.includes('fricative') ||
+                        item.notes.includes('glottal')
+                    );
+                    break;
+                case 'irregular':
+                    filteredData = ipaData.filter(item => 
+                        item.notes.includes('irregular') || 
+                        item.notes.includes('Silent') ||
+                        item.word === "Colonel" || 
+                        item.word === "Women"
+                    );
+                    break;
+                default:
+                    filteredData = ipaData;
+            }
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            populateTable(filteredData);
+        }
+        
+        // Focus search input
+        function focusSearch() {
+            document.getElementById('search').focus();
+        }
+    </script>
+</body>
+</html>
