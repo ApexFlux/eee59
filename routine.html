@@ -5,105 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Academic Timetable</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutrals with enhanced accents -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            /* Subtle gradient background for a modern feel */
-            background: linear-gradient(to bottom right, #fdfdfd, #f0f0f0);
-            min-height: 100vh; /* Ensure body takes full viewport height */
+            background-color: #f5f5f4;
         }
-        /* Global tooltip styles - will be positioned dynamically by JS */
-        #global-tooltip {
-            position: fixed; /* Use fixed positioning to prevent clipping by parent overflows */
-            background-color: #27272a; /* zinc-800 */
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            z-index: 1000; /* High z-index to ensure it's always on top */
-            opacity: 0;
-            pointer-events: none; /* Do not block mouse events when hidden */
-            transition: opacity 0.2s, transform 0.2s;
-            white-space: pre-wrap; /* Allow line breaks in tooltip content */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-            transform: translateY(-10px); /* Initial slight lift */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            max-height: 320px;
         }
-        #global-tooltip.show {
-            opacity: 1;
-            transform: translateY(0);
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 320px;
+            }
         }
-
         .grid-background-lines {
-            /* Adds horizontal lines to represent time slots, starting from 9 AM */
             background-image: linear-gradient(to bottom, #e7e5e4 1px, transparent 1px);
-            background-size: 100% 4rem; /* 4rem per hour */
-            background-position-y: calc(-9 * 4rem); /* Adjust to start lines from 9 AM */
+            background-size: 100% 4rem;
         }
         .current-day {
-            background-color: #fffbeb !important; /* yellow-50, slightly lighter */
-            border-left: 4px solid #fbbf24; /* yellow-400, slightly more vibrant */
-            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2); /* Subtle shadow for current day */
-        }
-        .time-label {
-            height: 4rem; /* Each time slot is 4rem tall */
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 0.5rem;
-            font-size: 0.875rem; /* text-sm */
-            color: #78716c; /* stone-500 */
-            border-bottom: 1px solid #e7e5e4;
-        }
-        .time-axis-column {
-            background-color: #f8f8f8;
-            border-right: 1px solid #e7e5e4;
-            position: sticky;
-            left: 0;
-            z-index: 10;
-        }
-        /* Custom scrollbar for aesthetic appeal */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #d6d3d1; /* stone-300 */
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a29e; /* stone-400 */
-        }
-        /* Style for text overflow in class blocks */
-        .class-block-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap; /* Keep text on a single line */
+            background-color: #fefce8 !important;
+            border-left: 4px solid #facc15;
         }
         .class-block {
-            min-height: 3rem; /* Ensure minimum height for text visibility */
+            overflow: hidden;
+        }
+        .class-block p {
+            white-space: normal;
+            line-height: 1.2;
+            margin: 0;
         }
     </style>
 </head>
 <body class="antialiased">
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         
-        <header class="text-center mb-8 bg-white p-6 rounded-2xl shadow-xl">
-            <h1 class="text-3xl sm:text-4xl font-bold text-stone-800 bg-clip-text text-transparent bg-gradient-to-r from-amber-600 to-yellow-500 pb-2">1st Year, 1st Semester Timetable</h1>
-            <p class="text-stone-600 mt-2 text-lg">An interactive dashboard to explore your B.Sc. (Engg.) 2025 schedule.</p>
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-stone-800">1st Year, 1st Semester Timetable</h1>
+            <p class="text-stone-500 mt-2">An interactive dashboard to explore your B.Sc. (Engg.) 2025 schedule.</p>
         </header>
 
-        <div id="controls" class="flex flex-col sm:flex-row gap-4 justify-center mb-8 p-4 bg-white rounded-2xl shadow-lg">
+        <div id="controls" class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <div class="flex items-center gap-2">
-                <label for="day-filter" class="font-medium text-stone-700">Filter by Day:</label>
-                <select id="day-filter" class="bg-stone-50 border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5 transition duration-200 ease-in-out hover:border-amber-400">
+                <label for="day-filter" class="font-medium text-stone-600">Filter by Day:</label>
+                <select id="day-filter" class="bg-white border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5">
                     <option value="all">All Days</option>
                     <option value="Sunday">Sunday</option>
                     <option value="Monday">Monday</option>
@@ -113,16 +64,16 @@
                 </select>
             </div>
             <div class="flex items-center gap-2">
-                <label for="type-filter" class="font-medium text-stone-700">Filter by Type:</label>
-                <select id="type-filter" class="bg-stone-50 border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5 transition duration-200 ease-in-out hover:border-amber-400">
+                <label for="type-filter" class="font-medium text-stone-600">Filter by Type:</label>
+                <select id="type-filter" class="bg-white border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5">
                     <option value="all">All Types</option>
                     <option value="Lecture">Lecture</option>
                     <option value="Lab">Lab</option>
                 </select>
             </div>
             <div class="flex items-center gap-2">
-                <label for="group-filter" class="font-medium text-stone-700">Filter by Group:</label>
-                <select id="group-filter" class="bg-stone-50 border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5 transition duration-200 ease-in-out hover:border-amber-400">
+                <label for="group-filter" class="font-medium text-stone-600">Filter by Group:</label>
+                <select id="group-filter" class="bg-white border border-stone-300 text-stone-700 rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full sm:w-auto p-2.5">
                     <option value="all">All Groups</option>
                     <option value="A">Group A</option>
                     <option value="B">Group B</option>
@@ -132,22 +83,19 @@
         </div>
 
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl shadow-xl overflow-x-auto">
-                <div class="relative min-w-[600px] sm:min-w-full">
-                    <div id="timetable-grid" class="grid gap-px bg-stone-200 border border-stone-200 rounded-lg overflow-hidden">
-                        <!-- Time axis and day headers will be generated by JS -->
-                    </div>
-                    <div id="no-classes-message" class="hidden text-center text-stone-500 p-8 text-lg">
-                        No classes found matching your filters. Try adjusting your selections!
+            <div class="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
+                <div class="relative">
+                    <div id="timetable-grid" class="grid grid-cols-1 sm:grid-cols-5 gap-px bg-stone-200 border border-stone-200 rounded-lg overflow-hidden">
+                        <!-- Headers will be generated by JS -->
                     </div>
                 </div>
             </div>
 
             <aside class="flex flex-col gap-8">
-                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-xl">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
                     <h2 class="text-xl font-bold text-stone-800 mb-4">Course & Faculty Details</h2>
                     <ul id="details-list" class="space-y-3 text-sm">
-                        <!-- Details will be generated by JS -->
+                       <!-- Details will be generated by JS -->
                     </ul>
                 </div>
             </aside>
@@ -155,11 +103,7 @@
 
     </div>
 
-    <!-- Global Tooltip Element - positioned outside the main grid to prevent clipping -->
-    <div id="global-tooltip" class="rounded-lg shadow-lg hidden"></div>
-
     <script>
-        // Sample schedule data for the timetable
         const scheduleData = [
             { day: 'Sunday', start: '9:00', end: '12:00', courseCode: 'EEE 1102', courseName: 'Electrical Circuit Analysis Lab', group: 'A', faculty: 'IA, SMSI', type: 'Lab', color: 'bg-sky-100', borderColor: 'border-sky-500' },
             { day: 'Sunday', start: '13:30', end: '14:50', courseCode: 'GED 1101', courseName: 'English for Technical Communication', group: 'N/A', faculty: 'MR', type: 'Lecture', color: 'bg-amber-100', borderColor: 'border-amber-500' },
@@ -177,13 +121,11 @@
             { day: 'Thursday', start: '15:00', end: '16:20', courseCode: 'EEE 1101', courseName: 'Electrical Circuit Analysis', group: 'N/A', faculty: 'MHR', type: 'Lecture', color: 'bg-sky-100', borderColor: 'border-sky-500' },
         ];
 
-        // Faculty abbreviations and their full names
         const facultyDetails = {
             'MHR': 'Md. Habibur Rahman', 'MJR': 'M. Junaebur Rashid', 'SMSI': 'Sazzad M. S. Imran', 'IA': 'Imtiaz Ahmed',
             'MAH': 'Md. Ahsan Habib', 'MH': 'Mainul Hossain', 'KCS': 'Kajal Chandra Saha', 'MJU': 'Md. Jasim Uddin', 'MR': 'Mizanur Rahman'
         };
         
-        // Course details including room numbers
         const courseDetails = {
             'EEE 1101': { name: 'Electrical Circuit Analysis', room: '208' },
             'EEE 1102': { name: 'Electrical Circuit Analysis Laboratory', room: '301' },
@@ -194,149 +136,93 @@
             'EEE 1104': { name: 'Computer Aided Engineering Drawing', room: '206' }
         };
 
-        // Days of the week for the timetable
+        const courseDisplayNames = {
+            'EEE 1101': 'Circuit Analysis',
+            'EEE 1102': 'Circuit Lab',
+            'MAT 1103': 'Linear Algebra',
+            'GED 1101': 'Technical English',
+            'PHY 1101': 'Electromagnetism',
+            'MAT 1101': 'Calculus',
+            'EEE 1104': 'Engineering Drawing'
+        };
+
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
         
-        // Global tooltip element reference
-        let globalTooltip;
-
-        // Event listener for when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             const dayFilter = document.getElementById('day-filter');
             const typeFilter = document.getElementById('type-filter');
             const groupFilter = document.getElementById('group-filter');
-            globalTooltip = document.getElementById('global-tooltip'); // Get tooltip element
 
-            // Initial rendering of the timetable and details list
             renderTimetable();
             renderDetailsList();
-            
-            // Add event listeners for filter changes to re-render the timetable
+
             dayFilter.addEventListener('change', renderTimetable);
             typeFilter.addEventListener('change', renderTimetable);
             groupFilter.addEventListener('change', renderTimetable);
             
-            // Highlight the current day on load
             highlightCurrentDay();
-
-            // Add resize listener to re-render timetable on window resize
-            window.addEventListener('resize', renderTimetable);
         });
 
-        /**
-         * Converts a time string (e.g., "9:00") to minutes from midnight.
-         * @param {string} time - The time string in "HH:MM" format.
-         * @returns {number} The time in minutes from midnight.
-         */
         function timeToMinutes(time) {
             const [hours, minutes] = time.split(':').map(Number);
             return hours * 60 + minutes;
         }
 
-        /**
-         * Formats a 24-hour time string to 12-hour format with AM/PM.
-         * @param {string} time24 - The time string in "HH:MM" (24-hour) format.
-         * @returns {string} The formatted time string (e.g., "01:30 PM").
-         */
         function formatTimeTo12Hr(time24) {
             const [hours, minutes] = time24.split(':').map(Number);
             const period = hours >= 12 ? 'PM' : 'AM';
-            const hours12 = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+            const hours12 = hours % 12 || 12;
             return `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
         }
 
-        /**
-         * Renders the academic timetable based on selected filters.
-         * Implements a basic column-packing algorithm for overlapping events.
-         */
         function renderTimetable() {
             const grid = document.getElementById('timetable-grid');
-            const noClassesMessage = document.getElementById('no-classes-message');
-            grid.innerHTML = ''; // Clear previous timetable content
-            noClassesMessage.classList.add('hidden'); // Hide message by default
+            grid.innerHTML = '';
             
-            // Get current filter values
             const dayFilterValue = document.getElementById('day-filter').value;
             const typeFilterValue = document.getElementById('type-filter').value;
             const groupFilterValue = document.getElementById('group-filter').value;
 
-            // Determine which days to display based on the day filter
             const filteredDays = days.filter(day => dayFilterValue === 'all' || day === dayFilterValue);
             
-            // Adjust grid columns based on screen width and filtered days
-            // Always add 1 for the time axis column
             if (window.innerWidth >= 640) {
-                grid.style.gridTemplateColumns = `80px repeat(${filteredDays.length}, minmax(0, 1fr))`;
+                 grid.style.gridTemplateColumns = `repeat(${filteredDays.length}, minmax(0, 1fr))`;
             } else {
-                // On small screens, always show one column for days, plus the time axis
-                grid.style.gridTemplateColumns = '80px minmax(0, 1fr)';
+                 grid.style.gridTemplateColumns = 'minmax(0, 1fr)';
             }
 
-            // Create time axis column header (empty corner)
-            const emptyHeader = document.createElement('div');
-            emptyHeader.className = 'text-center font-bold p-3 bg-white text-stone-700 sticky top-0 z-10 border-b border-stone-200 time-axis-column';
-            grid.appendChild(emptyHeader);
-
-            // Create day headers
-            filteredDays.forEach(day => {
-                const header = document.createElement('div');
-                header.className = 'text-center font-bold p-3 bg-white text-stone-700 sticky top-0 z-10 border-b border-stone-200';
-                header.textContent = day;
-                grid.appendChild(header);
-            });
-
-            // Create time labels and day columns
-            const startHour = 9; // Timetable starts visually at 9 AM
-            const endHour = 21; // Timetable ends visually at 9 PM (21:00)
-            const totalHours = endHour - startHour;
-
-            // Create the time axis column content
-            const timeAxisColumnDiv = document.createElement('div');
-            timeAxisColumnDiv.className = 'time-axis-column relative grid-background-lines';
-            timeAxisColumnDiv.style.height = `${totalHours * 4}rem`; // Total height for all time slots
-            grid.appendChild(timeAxisColumnDiv);
-
-            for (let h = startHour; h < endHour; h++) {
-                const timeLabel = document.createElement('div');
-                const hour12 = h % 12 || 12;
-                const period = h >= 12 ? 'PM' : 'AM';
-                timeLabel.textContent = `${hour12}${period}`;
-                timeLabel.className = 'time-label';
-                timeAxisColumnDiv.appendChild(timeLabel);
-            }
-
-            // Create day columns (content area)
             filteredDays.forEach(day => {
                 const dayColumn = document.createElement('div');
                 dayColumn.className = `day-column bg-stone-50 relative grid-background-lines`;
                 dayColumn.dataset.day = day;
-                dayColumn.style.height = `${totalHours * 4}rem`; // Match height of time axis
+
+                const header = document.createElement('div');
+                header.className = 'text-center font-bold p-3 bg-white text-stone-700 sticky top-0 z-10 border-b border-stone-200';
+                header.textContent = day;
+                dayColumn.appendChild(header);
+                
+                const timeWrapper = document.createElement('div');
+                timeWrapper.className = "relative h-[48rem]";
+                dayColumn.appendChild(timeWrapper);
+
                 grid.appendChild(dayColumn);
             });
 
-            // Set to keep track of unique items already displayed to avoid duplication
             const displayedItems = new Set();
-            
-            // Filter the schedule data based on user selections
             const filteredSchedule = scheduleData.filter(item => {
                 const isDayMatch = (dayFilterValue === 'all' || item.day === dayFilterValue);
                 const isTypeMatch = (typeFilterValue === 'all' || item.type === typeFilterValue);
                 
                 let isGroupMatch = false;
                 if (groupFilterValue === 'all') {
-                    // If 'All Groups' is selected, show group-specific classes (A or B) and N/A classes.
                     isGroupMatch = (item.group === 'A' || item.group === 'B' || item.group === 'N/A');
                 } else if (groupFilterValue === 'N/A') {
-                    // If 'N/A' is selected, only show classes with group 'N/A'.
                     isGroupMatch = (item.group === 'N/A');
                 } else {
-                    // If 'Group A' or 'Group B' is selected, show classes for that specific group AND classes with group 'N/A'.
                     isGroupMatch = (item.group === groupFilterValue || item.group === 'N/A');
                 }
 
                 if (isDayMatch && isTypeMatch && isGroupMatch) {
-                    // Create a unique identifier. For lectures (group 'N/A'), treat them as the same regardless of
-                    // which group filter (A or B) might make them eligible. This prevents duplication when 'All Groups' is selected.
                     const uniqueId = `${item.day}-${item.start}-${item.end}-${item.courseCode}-${item.type === 'Lecture' ? 'Lecture_Common' : item.group}`;
                     if (!displayedItems.has(uniqueId)) {
                         displayedItems.add(uniqueId);
@@ -346,191 +232,67 @@
                 return false;
             });
 
-            // If no classes found, display message and hide grid
-            if (filteredSchedule.length === 0) {
-                grid.innerHTML = ''; // Clear grid content
-                noClassesMessage.classList.remove('hidden');
-                return;
-            }
-
-            // Group filtered events by day to process overlaps within each day
-            const eventsByDay = {};
-            filteredDays.forEach(day => {
-                eventsByDay[day] = [];
-            });
-
             filteredSchedule.forEach(item => {
-                eventsByDay[item.day].push(item);
-            });
+                const dayColumn = grid.querySelector(`.day-column[data-day="${item.day}"]`);
+                if (!dayColumn) return;
 
-            // Process and render events for each day, handling overlaps
-            Object.keys(eventsByDay).forEach(day => {
-                const dayEvents = eventsByDay[day];
-                const timeWrapper = grid.querySelector(`.day-column[data-day="${day}"]`);
-                if (!timeWrapper) return; // Skip if day column not found (e.g., filtered out)
+                const timeWrapper = dayColumn.querySelector('.relative.h-\\[48rem\\]');
 
-                // Sort events by start time for consistent overlap calculation
-                dayEvents.sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+                const startMinutes = timeToMinutes(item.start);
+                const endMinutes = timeToMinutes(item.end);
+                
+                const topOffset = ((startMinutes - (9 * 60)) / 60) * 4;
+                const height = ((endMinutes - startMinutes) / 60) * 4;
 
-                // This is a simplified column packing algorithm for visual layout.
-                // It finds the minimum number of columns needed for overlapping events
-                // and assigns each event to a column.
-                const columns = []; // Each column stores the end time of its last event
-                const eventPositions = new Map(); // Map event object to its assigned column index
+                const block = document.createElement('div');
+                block.className = `class-block absolute w-full p-2 rounded-lg border-l-4 shadow-sm transition-all duration-200 ${item.color} ${item.borderColor}`;
+                block.style.top = `${topOffset}rem`;
+                block.style.height = `${height}rem`;
 
-                dayEvents.forEach(event => {
-                    const startMinutes = timeToMinutes(event.start);
-                    const endMinutes = timeToMinutes(event.end);
-                    
-                    let placedInColumn = false;
-                    // Try to place the event in an existing column where it doesn't overlap
-                    for (let i = 0; i < columns.length; i++) {
-                        if (startMinutes >= columns[i]) { // If current event starts after or at the same time as the last event in this column ends
-                            columns[i] = endMinutes; // Update the column's end time
-                            eventPositions.set(event, i); // Assign event to this column
-                            placedInColumn = true;
-                            break;
-                        }
-                    }
-                    // If no suitable column found, create a new one
-                    if (!placedInColumn) {
-                        columns.push(endMinutes);
-                        eventPositions.set(event, columns.length - 1); // Assign event to the new column
-                    }
+                block.innerHTML = `
+                    <p class="font-semibold text-xs leading-tight">${courseDisplayNames[item.courseCode]}</p>
+                    <p class="text-xs opacity-80 mt-1">${formatTimeTo12Hr(item.start)} - ${formatTimeTo12Hr(item.end)}</p>
+                    <p class="text-xs mt-1">${item.faculty}</p>
+                `;
+                
+                const overlapping = Array.from(timeWrapper.children).filter(child => {
+                    const childTop = parseFloat(child.style.top);
+                    const childHeight = parseFloat(child.style.height);
+                    return (topOffset < childTop + childHeight && topOffset + height > childTop);
                 });
 
-                const maxColumns = columns.length > 0 ? columns.length : 1; // Ensure at least 1 column for width calculation
+                if (overlapping.length > 0) {
+                     block.style.width = `calc(50% - 4px)`;
+                     overlapping[0].style.width = `calc(50% - 4px)`;
+                     block.style.left = '50%';
+                }
 
-                // Now, create and position the actual class blocks
-                dayEvents.forEach(item => {
-                    const startMinutes = timeToMinutes(item.start);
-                    const endMinutes = timeToMinutes(item.end);
-                    
-                    // Calculate top offset and height based on a 9:00 AM start and 4rem per hour scale
-                    const topOffset = ((startMinutes - (startHour * 60)) / 60) * 4; // Adjusted to startHour
-                    const height = ((endMinutes - startMinutes) / 60) * 4;
-
-                    const block = document.createElement('div');
-                    block.className = `class-block absolute p-2 rounded-lg border-l-4 shadow-md transition-all duration-300 ease-in-out transform hover:scale-[1.02] ${item.color} ${item.borderColor}`;
-                    block.style.top = `${topOffset}rem`;
-                    block.style.height = `${height}rem`;
-
-                    // Get the assigned column index for this event
-                    const columnIndex = eventPositions.get(item) || 0; // Default to 0 if not found (shouldn't happen)
-                    const blockWidth = `calc(${100 / maxColumns}% - 4px)`; // Distribute width among columns, with a small gap
-                    const blockLeft = `${(100 / maxColumns) * columnIndex}%`;
-
-                    block.style.width = blockWidth;
-                    block.style.left = blockLeft;
-
-                    block.innerHTML = `
-                        <p class="font-semibold text-xs leading-tight class-block-title">${item.courseName}</p>
-                        <p class="text-xs opacity-80">${formatTimeTo12Hr(item.start)} - ${formatTimeTo12Hr(item.end)}</p>
-                    `;
-                    
-                    // Add event listeners for the global tooltip
-                    block.addEventListener('mouseenter', (e) => {
-                        const rect = e.target.getBoundingClientRect();
-                        globalTooltip.innerHTML = `
-                            <strong class="block">${item.courseName} ${item.group && item.group !== 'N/A' ? `(Group ${item.group})` : ''}</strong>
-                            Faculty: ${item.faculty}<br>
-                            Room: ${courseDetails[item.courseCode]?.room || 'N/A'}
-                        `;
-
-                        // Ensure tooltip is hidden but occupies space for dimension calculation
-                        globalTooltip.style.opacity = '0';
-                        globalTooltip.style.visibility = 'hidden';
-                        globalTooltip.classList.remove('hidden'); // In case 'hidden' sets display: none
-
-                        // Use requestAnimationFrame to ensure layout is updated before getting dimensions
-                        requestAnimationFrame(() => {
-                            // Calculate desired position
-                            let tooltipLeft = rect.left + window.scrollX + (rect.width / 2) - (globalTooltip.offsetWidth / 2);
-                            let tooltipTop = rect.top + window.scrollY - globalTooltip.offsetHeight - 10; // 10px buffer above
-
-                            // Boundary checks for left/right
-                            const margin = 10; // Margin from viewport edges
-                            if (tooltipLeft < margin) {
-                                tooltipLeft = margin;
-                            } else if (tooltipLeft + globalTooltip.offsetWidth > window.innerWidth - margin) {
-                                tooltipLeft = window.innerWidth - globalTooltip.offsetWidth - margin;
-                            }
-
-                            // Boundary checks for top/bottom
-                            if (tooltipTop < window.scrollY + margin) { // If tooltip goes above viewport top
-                                tooltipTop = rect.bottom + window.scrollY + 10; // Position below the element
-                            }
-                            
-                            globalTooltip.style.left = `${tooltipLeft}px`;
-                            globalTooltip.style.top = `${tooltipTop}px`;
-                            
-                            // Now make it truly visible with transition
-                            globalTooltip.style.visibility = 'visible';
-                            globalTooltip.style.opacity = '1';
-                            globalTooltip.classList.add('show'); // Trigger transform transition
-                            globalTooltip.style.pointerEvents = 'auto';
-                        });
-                    });
-
-                    block.addEventListener('mouseleave', () => {
-                        globalTooltip.classList.remove('show'); // Start transform transition back
-                        globalTooltip.style.opacity = '0'; // Start opacity transition back
-                        // Hide completely after transition duration
-                        setTimeout(() => {
-                            globalTooltip.classList.add('hidden');
-                            globalTooltip.style.visibility = 'hidden';
-                            globalTooltip.style.pointerEvents = 'none';
-                        }, 200); // Match transition duration (0.2s)
-                    });
-
-                    timeWrapper.appendChild(block);
-                });
+                timeWrapper.appendChild(block);
             });
-            highlightCurrentDay(); // Re-highlight current day after rendering
+            highlightCurrentDay();
         }
         
-        /**
-         * Highlights the current day column in the timetable.
-         * Uses 'Asia/Dhaka' timezone for consistency with the timetable data.
-         */
         function highlightCurrentDay() {
-            // Get the current day of the week in 'Asia/Dhaka' timezone
             const today = new Date().toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
             const dayColumns = document.querySelectorAll('.day-column');
             dayColumns.forEach(col => {
-                col.classList.remove('current-day'); // Remove highlight from all columns first
+                col.classList.remove('current-day');
                 if (col.dataset.day === today) {
-                    col.classList.add('current-day'); // Add highlight to the current day
+                    col.classList.add('current-day');
                 }
             });
         }
         
-        /**
-         * Renders the list of course and faculty details in the sidebar.
-         */
         function renderDetailsList() {
             const list = document.getElementById('details-list');
-            list.innerHTML = ''; // Clear previous content
+            list.innerHTML = '';
             
-            // Create a set to store unique course codes to avoid duplicates in the list
-            const uniqueCourseCodes = new Set();
-            const uniqueCourses = [];
-            scheduleData.forEach(item => {
-                if (!uniqueCourseCodes.has(item.courseCode)) {
-                    uniqueCourseCodes.add(item.courseCode);
-                    uniqueCourses.push(item);
-                }
-            });
-
-            // Sort unique courses by course code for consistent display
-            uniqueCourses.sort((a, b) => a.courseCode.localeCompare(b.courseCode));
-
-            // Add unique courses to the details list
+            const uniqueCourses = [...new Map(scheduleData.map(item => [item.courseCode, item])).values()];
             uniqueCourses.forEach(course => {
                 const li = document.createElement('li');
                 li.className = 'flex items-center gap-3';
                 const colorDiv = document.createElement('div');
-                colorDiv.className = `w-4 h-4 rounded-full ${course.color} shadow-sm`;
+                colorDiv.className = `w-4 h-4 rounded-full ${course.color}`;
                 li.appendChild(colorDiv);
                 
                 const textDiv = document.createElement('div');
@@ -540,14 +302,11 @@
                 list.appendChild(li);
             });
             
-            // Add a separator
             const hr = document.createElement('hr');
-            hr.className = 'my-4 border-stone-200';
+            hr.className = 'my-4';
             list.appendChild(hr);
             
-            // Add faculty details to the list, sorted by abbreviation
-            const sortedFaculty = Object.entries(facultyDetails).sort(([abbrA], [abbrB]) => abbrA.localeCompare(abbrB));
-            sortedFaculty.forEach(([abbr, name]) => {
+            Object.entries(facultyDetails).forEach(([abbr, name]) => {
                 const li = document.createElement('li');
                 li.innerHTML = `<span class="font-semibold text-stone-700">${abbr}:</span> <span class="text-stone-600">${name}</span>`;
                 list.appendChild(li);
