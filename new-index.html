@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEE Course Materials Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --info: #1abc9c;
+            --gradient-start: #1a2980;
+            --gradient-end: #26d0ce;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 100px;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--accent);
+            text-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+        }
+        
+        .logo h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 8px 15px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 50px 20px;
+            margin-bottom: 50px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+        }
+        
+        .hero h1 {
+            color: white;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.4rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            line-height: 1.7;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 180px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .stat-box .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .stat-box .label {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Main sections container */
+        .sections-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* Section styling */
+        .section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 35px;
+            transition: all 0.4s ease;
+            border-left: 5px solid var(--secondary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+        }
+        
+        .section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .section h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section h2 i {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+        
+        /* Course grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.4s ease;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: var(--secondary);
+        }
+        
+        .course-card h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .course-card p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .course-card .icon {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 6rem;
+            opacity: 0.05;
+            color: var(--secondary);
+            z-index: 1;
+            transition: all 0.4s ease;
+        }
+        
+        .course-card:hover .icon {
+            opacity: 0.1;
+            transform: scale(1.1);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            box-shadow: none;
+        }
+        
+        .btn-outline:hover {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        /* Featured Resources */
+        .featured-resources {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .resource-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-top: 3px solid var(--info);
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        
+        .resource-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+            font-size: 1.3rem;
+        }
+        
+        .resource-card p {
+            color: #7f8c8d;
+            line-height: 1.7;
+        }
+        
+        /* Floating Bars */
+        .floating-bar {
+            position: fixed;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            backdrop-filter: blur(4px);
+            transform: translateY(0);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .floating-bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .floating-bar:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating-bar:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+            animation: none;
+        }
+        
+        .drive-bar {
+            background: rgba(66, 133, 244, 0.9);
+            bottom: 120px;
+        }
+        
+        .notion-bar {
+            background: rgba(0, 0, 0, 0.9);
+            bottom: 60px;
+        }
+        
+        .floating-bar i {
+            margin-right: 12px;
+            font-size: 1.3rem;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 40px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--secondary);
+            transform: translateY(-5px);
+        }
+        
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+        
+        .search-container input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding-left: 50px;
+        }
+        
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .course-grid, .featured-resources {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-bar {
+                right: 15px;
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .drive-bar {
+                bottom: 100px;
+            }
+            
+            .notion-bar {
+                bottom: 50px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animated {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h1>EEE Course Hub</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Home</a>
+                <a href="routine.html">Routine</a>
+                <a href="phonetics.html">Phonetics</a>
+                <a href="mathWeekly.cloud.html">Math</a>
+                <a href="https://drive.google.com/drive/folders/1FAIUoJCGTwkZteJ4OA2VTMKgssLvqHmc?usp=drive_link">Drive</a>
+            </div>
+        </nav>
+        
+        <!-- Hero Section -->
+        <section class="hero animated">
+            <h1>Electrical Engineering Resources Hub</h1>
+            <p>Central repository for course materials, study resources, and class schedules for EEE students</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search courses, materials, resources...">
+            </div>
+            
+            <div class="stats">
+                <div class="stat-box animated delay-1">
+                    <div class="number">12+</div>
+                    <div class="label">Courses</div>
+                </div>
+                <div class="stat-box animated delay-2">
+                    <div class="number">350+</div>
+                    <div class="label">Resources</div>
+                </div>
+                <div class="stat-box animated delay-3">
+                    <div class="number">24/7</div>
+                    <div class="label">Access</div>
+                </div>
+            </div>
+        </section>
+        
+        <main class="sections-container">
+            <!-- Class Routine Section -->
+            <section class="section animated delay-1">
+                <h2><i class="fas fa-calendar-alt"></i> Class Routine</h2>
+                <p>View your class schedule and timetable. Never miss a lecture again!</p>
+                <a href="routine.html" class="btn">View Routine</a>
+            </section>
+            
+            <!-- Course Structure Section -->
+            <section class="section animated delay-2">
+                <h2><i class="fas fa-book-open"></i> Core Courses</h2>
+                <p>Detailed course materials and structures for essential EEE subjects</p>
+                
+                <div class="course-grid">
+                    <!-- Calculus -->
+                    <div class="course-card">
+                        <i class="fas fa-calculator icon"></i>
+                        <h3>Differential and Integral Calculus</h3>
+                        <p>Mathematical foundations for engineering analysis and problem-solving</p>
+                        <a href="mat-1105.html" class="btn btn-outline">View Materials</a>
+                    </div>
+                    
+                    <!-- Circuit Analysis -->
+                    <div class="course-card">
+                        <i class="fas fa-bolt icon"></i>
+                        <h3>Electrical Circuit Analysis</h3>
+                        <p>Fundamentals of circuit theory, analysis techniques, and applications</p>
+                        <a href="eee-1101.html" class="btn btn-outline">View Materials</a>
+                    </div>
+                    
+                    <!-- Electricity and Magnetism -->
+                    <div class="course-card">
+                        <i class="fas fa-magnet icon"></i>
+                        <h3>Electricity and Magnetism</h3>
+                        <p>Principles of electromagnetism and their engineering applications</p>
+                        <a href="phy-1103.html" class="btn btn-outline">View Materials</a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Featured Resources Section -->
+            <section class="section animated delay-3">
+                <h2><i class="fas fa-star"></i> Featured Resources</h2>
+                <p>Essential tools and materials for your EEE studies</p>
+                
+                <div class="featured-resources">
+                    <div class="resource-card">
+                        <h3><i class="fas fa-language"></i> Phonetics Resources</h3>
+                        <p>Improve your pronunciation and language skills with our comprehensive phonetics guides.</p>
+                        <a href="phonetics.html" class="btn">Explore Phonetics</a>
+                    </div>
+                    
+                    <div class="resource-card">
+                        <h3><i class="fas fa-cloud"></i> Math Weekly Cloud</h3>
+                        <p>Access cloud-based math resources, problem sets, and collaborative tools.</p>
+                        <a href="mathWeekly.cloud.html" class="btn">Access Math Cloud</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Floating Bars -->
+        <a href="https://drive.google.com/drive/folders/1FAIUoJCGTwkZteJ4OA2VTMKgssLvqHmc?usp=drive_link" class="floating-bar drive-bar" id="drive-bar">
+            <i class="fab fa-google-drive"></i> EEE 59 Drive
+        </a>
+        
+        <a href="https://enginotes.notion.site/DU-EEE-23b216e3b2a680e5a496e40fa78063f7?source=copy_link" class="floating-bar notion-bar" id="notion-bar">
+            <i class="fas fa-book"></i> Important Notion Pages
+        </a>
+
+        <footer>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-discord"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p>&copy; 2023 EEE Course Materials Hub | Designed for EEE 59 Batch</p>
+            <p>Automatically updated with the latest resources and materials</p>
+        </footer>
+    </div>
+
+    <script>
+        // JavaScript for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Floating bar animation
+            const floatingBars = document.querySelectorAll('.floating-bar');
+            floatingBars.forEach(bar => {
+                bar.addEventListener('mouseenter', function() {
+                    this.style.animation = 'none';
+                });
+                
+                bar.addEventListener('mouseleave', function() {
+                    this.style.animation = 'float 3s ease-in-out infinite';
+                });
+            });
+            
+            // Course card hover effect enhancement
+            const courseCards = document.querySelectorAll('.course-card');
+            courseCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    const icon = this.querySelector('.icon');
+                    icon.style.opacity = '0.1';
+                    icon.style.transform = 'scale(1.1)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    const icon = this.querySelector('.icon');
+                    icon.style.opacity = '0.05';
+                    icon.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Animate elements on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.section, .resource-card').forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Set actual URLs
+            document.getElementById('drive-bar').href = 'https://drive.google.com/drive/folders/1FAIUoJCGTwkZteJ4OA2VTMKgssLvqHmc?usp=drive_link';
+            document.getElementById('notion-bar').href = 'https://enginotes.notion.site/DU-EEE-23b216e3b2a680e5a496e40fa78063f7?source=copy_link';
+        });
+    </script>
+</body>
+</html>
