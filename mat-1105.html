@@ -3,104 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculus Syllabus Overview</title>
+    <title>Modern Calculus Syllabus</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        },
+                        dark: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1a202c; /* Dark background */
-            color: #e2e8f0; /* Light text */
-            line-height: 1.6;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.7;
+            min-height: 100vh;
+            position: relative;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1.5rem;
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 400px;
+            background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 100%);
+            z-index: -1;
+            border-bottom-left-radius: 30% 20%;
+            border-bottom-right-radius: 30% 20%;
         }
+        
         .card {
-            background-color: #2d3748; /* Slightly lighter dark for cards */
-            border-radius: 0.75rem; /* Rounded corners */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(124, 58, 237, 0.2);
         }
-        .header {
-            background-image: linear-gradient(to right, #6366f1, #8b5cf6); /* Gradient header */
-            padding: 2.5rem 1.5rem;
-            border-bottom-left-radius: 1.5rem;
-            border-bottom-right-radius: 1.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            color: #ffffff;
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(123, 97, 255, 0.25);
+            border-color: rgba(139, 92, 246, 0.4);
         }
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .header p {
-            font-size: 1.125rem;
-            font-weight: 300;
-        }
-        .chapter-list li {
-            margin-bottom: 0.5rem;
-        }
-        .chapter-list li strong {
-            color: #9f7aea; /* Purple for chapter numbers */
-        }
+        
         .accordion-header {
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
-            background-color: #4a5568; /* Darker grey for accordion header */
-            border-radius: 0.5rem;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
+            padding: 1.5rem;
+            background: linear-gradient(90deg, rgba(55, 48, 107, 0.6) 0%, rgba(30, 41, 59, 0.8) 100%);
+            transition: all 0.3s ease;
         }
+        
         .accordion-header:hover {
-            background-color: #6366f1; /* Hover effect */
+            background: linear-gradient(90deg, rgba(76, 29, 149, 0.7) 0%, rgba(55, 48, 107, 0.8) 100%);
         }
+        
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-out;
-            padding: 0 1rem;
-            background-color: #2d3748;
-            border-bottom-left-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
+            padding: 0 1.5rem;
         }
+        
         .accordion-content.active {
-            max-height: 1000px; /* Adjust as needed for content height */
-            padding: 1rem;
+            max-height: 1500px;
+            padding: 1.5rem;
         }
-        .arrow-icon {
-            transition: transform 0.3s ease;
+        
+        .chapter-badge {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
-        .arrow-icon.rotate {
-            transform: rotate(90deg);
+        
+        .header-icon {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .footer {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(124, 58, 237, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            body::before {
+                height: 300px;
+                border-bottom-left-radius: 20% 10%;
+                border-bottom-right-radius: 20% 10%;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .accordion-header {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
-<body>
-    <div class="header">
-        <h1>Calculus Syllabus Overview</h1>
-        <p class="text-lg font-light">Your weekly guide to mastering Calculus</p>
-        <div class="mt-4">
-            <h2 class="text-2xl font-semibold">Book: Calculus by H. Anton</h2>
-            <p class="text-md font-light">Tenth Edition by Howard Anton, Irl Bivens, Stephen Davis</p>
-            <p class="text-sm font-light">(International Student Version)</p>
-        </div>
-    </div>
+<body class="relative">
+    <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12">
+        <!-- Header -->
+        <header class="text-center mb-12 sm:mb-16 relative z-10">
+            <div class="header-icon">
+                <i class="fas fa-calculator text-4xl text-white"></i>
+            </div>
+            <h1 class="font-serif text-4xl sm:text-5xl font-bold text-white mb-3">Calculus Syllabus</h1>
+            <p class="text-lg text-indigo-200 max-w-2xl mx-auto">Your comprehensive guide to mastering Differential and Integral Calculus</p>
+            
+            <div class="mt-8 bg-white/5 backdrop-blur-sm rounded-xl p-6 max-w-3xl mx-auto border border-white/10">
+                <h2 class="text-xl font-bold text-white mb-2">Book: Calculus by H. Anton</h2>
+                <p class="text-indigo-200">Tenth Edition by Howard Anton, Irl Bivens, Stephen Davis</p>
+                <p class="text-sm text-indigo-300 mt-1">(International Student Version)</p>
+                
+                <div class="mt-4 pt-4 border-t border-white/10">
+                    <h3 class="font-bold text-primary-300">Course Details</h3>
+                    <p class="text-white">0541-MAT-1105: Differential and Integral Calculus (3.0 Credits)</p>
+                </div>
+            </div>
+        </header>
 
-    <div class="container">
-        <h2 class="text-3xl font-bold text-center mb-8 text-indigo-400">Course: 0541-MAT-1105: Differential and Integral Calculus (3.0 Credits)</h2>
-
-        <div id="syllabus-container">
-            <!-- Syllabus content will be dynamically loaded here -->
-        </div>
+        <!-- Syllabus Content -->
+        <main class="relative z-10">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-white">Weekly Schedule</h2>
+                <span class="text-sm text-primary-300 bg-primary-900/30 px-3 py-1 rounded-full">
+                    <i class="far fa-calendar mr-1"></i> 14 Weeks
+                </span>
+            </div>
+            
+            <div id="syllabus-container" class="space-y-6">
+                <!-- Syllabus content will be dynamically loaded here -->
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="footer mt-16 rounded-2xl p-6 text-center">
+            <p class="text-indigo-300">© 2023 Calculus Course Syllabus | Designed for MAT-1105</p>
+            <p class="text-sm text-indigo-400 mt-2">Interactive Syllabus with Weekly Breakdown</p>
+        </footer>
     </div>
 
     <script>
@@ -211,39 +304,68 @@
         syllabusData.forEach((weekData, index) => {
             const card = document.createElement('div');
             card.className = 'card';
-
+            
             const header = document.createElement('div');
             header.className = 'accordion-header';
             header.innerHTML = `
-                <div>
-                    <h3 class="text-xl font-semibold text-purple-300">${weekData.week} (${weekData.lectures})</h3>
-                    <p class="text-sm text-gray-300 mt-1">${weekData.topics}</p>
+                <div class="flex items-start">
+                    <div class="bg-primary-700 text-white w-10 h-10 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                        <span class="font-bold">${index + 1}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">${weekData.week} <span class="text-primary-300 font-normal">(${weekData.lectures})</span></h3>
+                        <p class="text-sm text-indigo-200 mt-1">${weekData.topics}</p>
+                    </div>
                 </div>
-                <svg class="arrow-icon w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <div class="ml-4 flex-shrink-0">
+                    <i class="fas fa-chevron-down text-indigo-300 transform transition-transform duration-300"></i>
+                </div>
             `;
             card.appendChild(header);
 
             const content = document.createElement('div');
             content.className = 'accordion-content';
-            const chapterList = document.createElement('ul');
-            chapterList.className = 'chapter-list list-disc pl-5 py-2';
-
+            
+            const chapterList = document.createElement('div');
+            chapterList.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+            
             weekData.chapters.forEach(chapter => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `<strong>${chapter.number}</strong> - ${chapter.title} (page ${chapter.page})`;
-                chapterList.appendChild(listItem);
+                const chapterItem = document.createElement('div');
+                chapterItem.className = 'bg-dark-800 p-3 rounded-lg flex items-start';
+                chapterItem.innerHTML = `
+                    <div class="chapter-badge mr-3 flex-shrink-0">${chapter.number}</div>
+                    <div>
+                        <h4 class="font-medium text-white">${chapter.title}</h4>
+                        <p class="text-xs text-indigo-300 mt-1">Page ${chapter.page}</p>
+                    </div>
+                `;
+                chapterList.appendChild(chapterItem);
             });
+            
             content.appendChild(chapterList);
             card.appendChild(content);
             syllabusContainer.appendChild(card);
 
             // Add click event listener for accordion functionality
             header.addEventListener('click', () => {
-                content.classList.toggle('active');
-                header.querySelector('.arrow-icon').classList.toggle('rotate');
+                const isActive = content.classList.contains('active');
+                const icon = header.querySelector('i');
+                
+                if (isActive) {
+                    content.classList.remove('active');
+                    icon.classList.remove('rotate-180');
+                } else {
+                    content.classList.add('active');
+                    icon.classList.add('rotate-180');
+                }
             });
         });
+        
+        // Open the first accordion by default
+        setTimeout(() => {
+            const firstHeader = document.querySelector('.accordion-header');
+            if (firstHeader) firstHeader.click();
+        }, 300);
     </script>
 </body>
 </html>
-
