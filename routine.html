@@ -14,26 +14,29 @@
             font-family: 'Inter', sans-serif;
             /* Subtle gradient background for a modern feel */
             background: linear-gradient(to bottom right, #fdfdfd, #f0f0f0);
+            min-height: 100vh; /* Ensure body takes full viewport height */
         }
-        .tooltip {
-            position: absolute;
+        /* Global tooltip styles - will be positioned dynamically by JS */
+        #global-tooltip {
+            position: fixed; /* Use fixed positioning to prevent clipping by parent overflows */
             background-color: #27272a; /* zinc-800 */
             color: white;
             padding: 8px 12px;
             border-radius: 8px;
             font-size: 0.875rem;
-            z-index: 10;
+            z-index: 1000; /* High z-index to ensure it's always on top */
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            white-space: pre-wrap;
+            pointer-events: none; /* Do not block mouse events when hidden */
+            transition: opacity 0.2s, transform 0.2s;
+            white-space: pre-wrap; /* Allow line breaks in tooltip content */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-            transform: translateY(-10px); /* Slight lift for tooltip */
+            transform: translateY(-10px); /* Initial slight lift */
         }
-        .class-block:hover .tooltip {
+        #global-tooltip.show {
             opacity: 1;
             transform: translateY(0);
         }
+
         .grid-background-lines {
             /* Adds horizontal lines to represent time slots, starting from 9 AM */
             background-image: linear-gradient(to bottom, #e7e5e4 1px, transparent 1px);
@@ -77,6 +80,15 @@
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #a8a29e; /* stone-400 */
+        }
+        /* Style for text overflow in class blocks */
+        .class-block-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap; /* Keep text on a single line */
+        }
+        .class-block {
+            min-height: 3rem; /* Ensure minimum height for text visibility */
         }
     </style>
 </head>
@@ -143,6 +155,9 @@
 
     </div>
 
+    <!-- Global Tooltip Element - positioned outside the main grid to prevent clipping -->
+    <div id="global-tooltip" class="rounded-lg shadow-lg hidden"></div>
+
     <script>
         // Sample schedule data for the timetable
         const scheduleData = [
@@ -182,11 +197,15 @@
         // Days of the week for the timetable
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
         
+        // Global tooltip element reference
+        let globalTooltip;
+
         // Event listener for when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             const dayFilter = document.getElementById('day-filter');
             const typeFilter = document.getElementById('type-filter');
             const groupFilter = document.getElementById('group-filter');
+            globalTooltip = document.getElementById('global-tooltip'); // Get tooltip element
 
             // Initial rendering of the timetable and details list
             renderTimetable();
@@ -199,6 +218,9 @@
             
             // Highlight the current day on load
             highlightCurrentDay();
+
+            // Add resize listener to re-render timetable on window resize
+            window.addEventListener('resize', renderTimetable);
         });
 
         /**
@@ -402,15 +424,65 @@
                     block.style.left = blockLeft;
 
                     block.innerHTML = `
-                        <p class="font-semibold text-xs leading-tight">${item.courseName}</p> <!-- Changed from courseCode to courseName -->
+                        <p class="font-semibold text-xs leading-tight class-block-title">${item.courseName}</p>
                         <p class="text-xs opacity-80">${formatTimeTo12Hr(item.start)} - ${formatTimeTo12Hr(item.end)}</p>
-                        <div class="tooltip">
+                    `;
+                    
+                    // Add event listeners for the global tooltip
+                    block.addEventListener('mouseenter', (e) => {
+                        const rect = e.target.getBoundingClientRect();
+                        globalTooltip.innerHTML = `
                             <strong class="block">${item.courseName} ${item.group && item.group !== 'N/A' ? `(Group ${item.group})` : ''}</strong>
                             Faculty: ${item.faculty}<br>
                             Room: ${courseDetails[item.courseCode]?.room || 'N/A'}
-                        </div>
-                    `;
-                    
+                        `;
+
+                        // Ensure tooltip is hidden but occupies space for dimension calculation
+                        globalTooltip.style.opacity = '0';
+                        globalTooltip.style.visibility = 'hidden';
+                        globalTooltip.classList.remove('hidden'); // In case 'hidden' sets display: none
+
+                        // Use requestAnimationFrame to ensure layout is updated before getting dimensions
+                        requestAnimationFrame(() => {
+                            // Calculate desired position
+                            let tooltipLeft = rect.left + window.scrollX + (rect.width / 2) - (globalTooltip.offsetWidth / 2);
+                            let tooltipTop = rect.top + window.scrollY - globalTooltip.offsetHeight - 10; // 10px buffer above
+
+                            // Boundary checks for left/right
+                            const margin = 10; // Margin from viewport edges
+                            if (tooltipLeft < margin) {
+                                tooltipLeft = margin;
+                            } else if (tooltipLeft + globalTooltip.offsetWidth > window.innerWidth - margin) {
+                                tooltipLeft = window.innerWidth - globalTooltip.offsetWidth - margin;
+                            }
+
+                            // Boundary checks for top/bottom
+                            if (tooltipTop < window.scrollY + margin) { // If tooltip goes above viewport top
+                                tooltipTop = rect.bottom + window.scrollY + 10; // Position below the element
+                            }
+                            
+                            globalTooltip.style.left = `${tooltipLeft}px`;
+                            globalTooltip.style.top = `${tooltipTop}px`;
+                            
+                            // Now make it truly visible with transition
+                            globalTooltip.style.visibility = 'visible';
+                            globalTooltip.style.opacity = '1';
+                            globalTooltip.classList.add('show'); // Trigger transform transition
+                            globalTooltip.style.pointerEvents = 'auto';
+                        });
+                    });
+
+                    block.addEventListener('mouseleave', () => {
+                        globalTooltip.classList.remove('show'); // Start transform transition back
+                        globalTooltip.style.opacity = '0'; // Start opacity transition back
+                        // Hide completely after transition duration
+                        setTimeout(() => {
+                            globalTooltip.classList.add('hidden');
+                            globalTooltip.style.visibility = 'hidden';
+                            globalTooltip.style.pointerEvents = 'none';
+                        }, 200); // Match transition duration (0.2s)
+                    });
+
                     timeWrapper.appendChild(block);
                 });
             });
