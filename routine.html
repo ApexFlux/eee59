@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Class Schedule</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #2d3748;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --info: #2196f3;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease;
+        }
+
+        h1 {
+            font-family: 'Raleway', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--primary);
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .day-selector {
+            display: flex;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 5px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .day-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: var(--transition);
+            color: var(--dark);
+        }
+
+        .day-btn.active, .day-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .view-toggle {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 5px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+        }
+
+        .view-btn {
+            padding: 10px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 8px;
+        }
+
+        .view-btn.active, .view-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .schedule-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .day-column {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .day-column:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+
+        .day-title {
+            font-family: 'Raleway', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .date {
+            font-size: 1.1rem;
+            color: var(--primary);
+            background: #eef5fc;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border-left: 4px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .class-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .class-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .course-code {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .course-code i {
+            color: var(--accent);
+        }
+
+        .course-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .class-details {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .detail-item i {
+            color: var(--primary);
+            min-width: 20px;
+            margin-top: 3px;
+        }
+
+        .time {
+            background: #e8f4ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            color: var(--secondary);
+            display: inline-block;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 15px;
+        }
+
+        .badge-lab {
+            background: #ffeded;
+            color: #e74c3c;
+        }
+
+        .badge-lecture {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-tutorial {
+            background: #fff8e1;
+            color: #f57f17;
+        }
+
+        .class-group {
+            background: #eef5fc;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary);
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--primary);
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .day-selector {
+                flex-wrap: wrap;
+            }
+            
+            .day-btn {
+                flex: 1;
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>University Class Schedule</h1>
+            <p class="subtitle">Your weekly routine at Curzon Hall, University of Dhaka</p>
+        </header>
+
+        <div class="controls">
+            <div class="day-selector">
+                <button class="day-btn active" data-day="sunday">Sunday</button>
+                <button class="day-btn" data-day="monday">Monday</button>
+                <button class="day-btn" data-day="tuesday">Tuesday</button>
+                <button class="day-btn" data-day="wednesday">Wednesday</button>
+                <button class="day-btn" data-day="thursday">Thursday</button>
+            </div>
+            
+            <div class="view-toggle">
+                <button class="view-btn active"><i class="fas fa-th"></i> Grid</button>
+                <button class="view-btn"><i class="fas fa-list"></i> List</button>
+            </div>
+        </div>
+
+        <div class="schedule-container">
+            <!-- Sunday -->
+            <div class="day-column" id="sunday">
+                <div class="day-header">
+                    <h2 class="day-title">Sunday</h2>
+                    <div class="date">July 6, 2025</div>
+                </div>
+                
+                <div class="schedule-grid">
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-flask"></i>
+                            EEE 1102
+                        </div>
+                        <h3 class="course-name">Electrical Circuit Analysis Lab</h3>
+                        <div class="class-group">Group A</div>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">9:00 AM - 12:00 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 301</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teachers: IA, SMSI</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lab">Lab Session</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-language"></i>
+                            GED 1101
+                        </div>
+                        <h3 class="course-name">English for Technical Communication</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">1:30 PM - 2:50 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MR</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-calculator"></i>
+                            MAT 1103
+                        </div>
+                        <h3 class="course-name">Linear Algebra and Numerical Analysis</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">3:00 PM - 4:20 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: KCS</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monday -->
+            <div class="day-column" id="monday" style="display: none;">
+                <div class="day-header">
+                    <h2 class="day-title">Monday</h2>
+                    <div class="date">July 7, 2025</div>
+                </div>
+                
+                <div class="schedule-grid">
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-drafting-compass"></i>
+                            EEE 1104
+                        </div>
+                        <h3 class="course-name">Computer Aided Engineering Drawing</h3>
+                        <div class="class-group">Group B</div>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">10:00 AM - 1:00 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 206</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teachers: MAH, MH</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-tutorial">Tutorial</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-calculator"></i>
+                            MAT 1101
+                        </div>
+                        <h3 class="course-name">Differential and Integral Calculus</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">1:30 PM - 2:50 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MJU</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-atom"></i>
+                            PHY 1101
+                        </div>
+                        <h3 class="course-name">Electricity and Magnetism</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">3:00 PM - 4:20 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MJR</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tuesday -->
+            <div class="day-column" id="tuesday" style="display: none;">
+                <div class="day-header">
+                    <h2 class="day-title">Tuesday</h2>
+                    <div class="date">July 8, 2025</div>
+                </div>
+                
+                <div class="schedule-grid">
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-language"></i>
+                            GED 1101
+                        </div>
+                        <h3 class="course-name">English for Technical Communication</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">1:30 PM - 2:50 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MR</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-bolt"></i>
+                            EEE 1101
+                        </div>
+                        <h3 class="course-name">Electrical Circuit Analysis</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">3:00 PM - 4:20 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MHR</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Wednesday -->
+            <div class="day-column" id="wednesday" style="display: none;">
+                <div class="day-header">
+                    <h2 class="day-title">Wednesday</h2>
+                    <div class="date">July 9, 2025</div>
+                </div>
+                
+                <div class="schedule-grid">
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-flask"></i>
+                            EEE 1102
+                        </div>
+                        <h3 class="course-name">Electrical Circuit Analysis Lab</h3>
+                        <div class="class-group">Group B</div>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">9:00 AM - 12:00 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 301</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teachers: IA, SMSI</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lab">Lab Session</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-drafting-compass"></i>
+                            EEE 1104
+                        </div>
+                        <h3 class="course-name">Computer Aided Engineering Drawing</h3>
+                        <div class="class-group">Group A</div>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">10:00 AM - 1:00 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 206</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teachers: MAH, MH</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-tutorial">Tutorial</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-calculator"></i>
+                            MAT 1103
+                        </div>
+                        <h3 class="course-name">Linear Algebra and Numerical Analysis</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">1:30 PM - 2:50 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: KCS</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-atom"></i>
+                            PHY 1101
+                        </div>
+                        <h3 class="course-name">Electricity and Magnetism</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">3:00 PM - 4:20 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MJR</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Thursday -->
+            <div class="day-column" id="thursday" style="display: none;">
+                <div class="day-header">
+                    <h2 class="day-title">Thursday</h2>
+                    <div class="date">July 10, 2025</div>
+                </div>
+                
+                <div class="schedule-grid">
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-calculator"></i>
+                            MAT 1101
+                        </div>
+                        <h3 class="course-name">Differential and Integral Calculus</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">1:30 PM - 2:50 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MJU</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                    
+                    <div class="class-card">
+                        <div class="course-code">
+                            <i class="fas fa-bolt"></i>
+                            EEE 1101
+                        </div>
+                        <h3 class="course-name">Electrical Circuit Analysis</h3>
+                        
+                        <div class="class-details">
+                            <div class="detail-item">
+                                <i class="far fa-clock"></i>
+                                <div>
+                                    <span class="time">3:00 PM - 4:20 PM</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-door-open"></i>
+                                <div>Room No. 208</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>Teacher: MHR</div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>Curzon Hall, Dhaka 1000, Bangladesh</div>
+                            </div>
+                        </div>
+                        
+                        <div class="badge badge-lecture">Lecture</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 University Class Schedule | Curzon Hall, University of Dhaka</p>
+        </footer>
+    </div>
+
+    <script>
+        // Day navigation functionality
+        document.querySelectorAll('.day-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.day-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Hide all day columns
+                document.querySelectorAll('.day-column').forEach(column => {
+                    column.style.display = 'none';
+                });
+                
+                // Show selected day column
+                const dayId = this.getAttribute('data-day');
+                document.getElementById(dayId).style.display = 'block';
+            });
+        });
+        
+        // View toggle functionality
+        document.querySelectorAll('.view-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Change layout based on view
+                const scheduleGrids = document.querySelectorAll('.schedule-grid');
+                if (this.textContent.includes('Grid')) {
+                    scheduleGrids.forEach(grid => {
+                        grid.style.display = 'grid';
+                    });
+                } else {
+                    scheduleGrids.forEach(grid => {
+                        grid.style.display = 'block';
+                    });
+                }
+            });
+        });
+        
+        // Set today's day as active
+        const today = new Date(2025, 6, 6); // July 6, 2025 (Sunday)
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday'];
+        const dayIndex = today.getDay();
+        
+        // Activate today's button
+        if (dayIndex >= 0 && dayIndex < 5) {
+            document.querySelector(`.day-btn[data-day="${days[dayIndex]}"]`).click();
+        } else {
+            // If it's weekend, start with Sunday
+            document.querySelector('.day-btn[data-day="sunday"]').click();
+        }
+    </script>
+</body>
+</html>
