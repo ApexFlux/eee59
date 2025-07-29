@@ -1,1 +1,205 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Versions Archive</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            border-bottom: 2px solid rgba(255, 204, 0, 0.3);
+            padding-bottom: 8px;
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-item {
+            padding: 15px;
+            margin: 12px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        
+        .file-item:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .file-item a {
+            color: #4dccff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            flex-grow: 1;
+            transition: color 0.3s ease;
+        }
+        
+        .file-item a:hover {
+            color: #00ffea;
+            text-decoration: underline;
+        }
+        
+        .file-icon {
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: #ffcc00;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Old Versions Archive</h1>
+            <p class="subtitle">Navigate through historical versions of your pages</p>
+        </header>
+        
+        <div class="card">
+            <h2>Index Files</h2>
+            <ul class="file-list">
+                <li class="file-item">
+                    <span class="file-icon">📄</span>
+                    <a href="index-old.html">index-old.html</a>
+                </li>
+                <li class="file-item">
+                    <span class="file-icon">📄</span>
+                    <a href="index.html">index.html</a>
+                </li>
+                <li class="file-item">
+                    <span class="file-icon">📄</span>
+                    <a href="index01.html">index01.html</a>
+                </li>
+                <li class="file-item">
+                    <span class="file-icon">📄</span>
+                    <a href="index02.html">index02.html</a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h2>Phonetics Files</h2>
+            <ul class="file-list">
+                <li class="file-item">
+                    <span class="file-icon">🔊</span>
+                    <a href="phoneticsv1.html">phoneticsv1.html</a>
+                </li>
+                <li class="file-item">
+                    <span class="file-icon">🔊</span>
+                    <a href="phoneticsv2.html">phoneticsv2.html</a>
+                </li>
+                <li class="file-item">
+                    <span class="file-icon">🔊</span>
+                    <a href="phoneticsv3.html">phoneticsv3.html</a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h2>Other Files</h2>
+            <ul class="file-list">
+                <li class="file-item">
+                    <span class="file-icon">📅</span>
+                    <a href="math weekly schedule.html">math weekly schedule.html</a>
+                </li>
+                <li class="file-item">
+                    <span class="file-icon">🔄</span>
+                    <a href="routine-old.html">routine-old.html</a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>This page contains links to historical versions of your files</p>
+            <p>Click any link to navigate to that version</p>
+        </div>
+    </div>
+</body>
+</html>
