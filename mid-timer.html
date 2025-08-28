@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exam Countdown</title>
+  <style>
+    /* Import Google Font */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+
+    #countdown {
+      font-size: 2em;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.4);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #countdown:hover {
+      transform: scale(1.05);
+    }
+
+    .highlight {
+      color: #00ffcc;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Countdown to My Exam</h1>
+  <div id="countdown"></div>
+  <footer>Stay calm & study smart 💡</footer>
+
+  <script>
+    // 🔹 Set exam date: 14th September 2025, 10:00 AM
+    const examDate = new Date("2025-09-14T10:00:00").getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const timeLeft = examDate - now;
+
+      if (timeLeft <= 0) {
+        document.getElementById("countdown").innerHTML = "🎉 Exam Day has arrived! Best of luck!";
+        clearInterval(timer);
+        return;
+      }
+
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerHTML =
+        `<span class="highlight">${days}</span>d : 
+         <span class="highlight">${hours}</span>h : 
+         <span class="highlight">${minutes}</span>m : 
+         <span class="highlight">${seconds}</span>s`;
+    }
+
+    const timer = setInterval(updateCountdown, 1000);
+    updateCountdown(); // Run immediately
+  </script>
+</body>
+</html>
