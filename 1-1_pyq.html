@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1st Year EEE PYQ Study Guide</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+    
+    <style>
+        /* --- Base Styles --- */
+        :root {
+            --primary-color: #007bff;
+            --text-color: #343a40;
+            --bg-color: #f8f9fa;
+            --white: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.8em;
+            color: var(--text-color);
+        }
+
+        header p {
+            font-size: 1.15em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        /* --- Tab Navigation --- */
+        .tab-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #fdfdfd;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-link {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 18px 22px;
+            font-size: 1.1em;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            color: #6c757d;
+            background: transparent;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -1px; /* Aligns with border */
+        }
+
+        .tab-link:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* --- Content Panes --- */
+        .tab-content {
+            display: none;
+            padding: 35px 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- Content Styling --- */
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary-color);
+            border-bottom: 2px solid #f1f3f5;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5em;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        li {
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 12px;
+        }
+
+        li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #28a745; /* Green checkmark */
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        /* --- Modern "Card" Style for Insight/Plan --- */
+        .card {
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        
+        .card-plan {
+            border-left-color: #fd7e14; /* Orange for plan */
+        }
+        
+        .card-header {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2em;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .card ol {
+            padding-left: 30px;
+            margin-top: 10px;
+        }
+         .card ol li {
+            padding-left: 10px;
+            margin-bottom: 8px;
+         }
+
+        .card li::before {
+            content: ''; /* Remove checkmark for ordered list */
+        }
+        
+        /* Utility */
+        strong {
+            font-weight: 700;
+            color: #c92a2a; /* Reddish color for emphasis */
+        }
+        
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            background-color: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #d6336c;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>1st Year EEE PYQ Study Guide</h1>
+            <p>Your 5-Course Prioritized Topic Analysis (2021-2024)</p>
+        </header>
+
+        <div class="tab-container">
+            <button class="tab-link active" onclick="openCourse(event, 'ECA')">⚡ EEE 1101 (Circuits)</button>
+            <button class="tab-link" onclick="openCourse(event, 'Physics')">🧲 PHY 1101 (E&M)</button>
+            <button class="tab-link" onclick="openCourse(event, 'Calculus')">📐 MAT 1101 (Calculus)</button>
+            <button class="tab-link" onclick="openCourse(event, 'Linear')">🔢 MAT 1103 (Linear)</button>
+            <button class="tab-link" onclick="openCourse(event, 'English')">📚 GED 1101 (English)</button>
+        </div>
+
+        <div id="ECA" class="tab-content active">
+            <div class="card">
+                <div class="card-header">Overall Insight</div>
+                Your teacher builds this course around a set of core, repeating principles. The Incourse exams test the fundamental DC techniques, and the Final exams <strong>re-test those exact same techniques</strong> but apply them to more complex AC (phasor) circuits.
+            </div>
+
+            <h2>Tier 1: The "Must-Know" Topics (Highest Priority)</h2>
+            <p>These topics appear on almost every single exam. Mastering these is non-negotiable.</p>
+            <ul>
+                <li><strong>The "Big Three" Theorems:</strong>
+                    <ul>
+                        <li><strong>Thevenin's Theorem:</strong> The teacher's absolute favorite.</li>
+                        <li><strong>Superposition Theorem:</strong> A very close second, used for both DC and AC.</li>
+                        <li><strong>Norton's Theorem:</strong> Also frequent, often as an alternative to Thevenin.</li>
+                    </ul>
+                </li>
+                <li><strong>Mesh (Loop) Analysis:</strong> The go-to method for solving complex circuits in the exams.</li>
+                <li><strong>The "Dependent Source" Trick:</strong> The teacher <strong>loves</strong> to include dependent sources (e.g., $2i_x$ or $3v_x$) in all of the "Big Three" and Mesh/Nodal problems.</li>
+                <li><strong>Maximum Power Transfer Theorem:</strong> A recurring question. You are asked to <strong>state the theorem</strong>, <strong>prove the 50% efficiency</strong>, and <strong>find the load</strong> ($Z_L$) for max power.</li>
+            </ul>
+
+            <h2>Tier 2: Core Final Exam Topics (High Priority)</h2>
+            <p>These are the foundation of the Final exams.</p>
+            <ul>
+                <li><strong>AC Phasor Analysis:</strong> This is the <strong>evolution</strong> of all Tier 1 topics. You must re-do Thevenin, Superposition, and Mesh analysis using complex numbers (impedance).</li>
+                <li><strong>First-Order Transients (RC & RL Circuits):</strong> Find $v_c(t)$ or $i_L(t)$ for a circuit with a switch that moves at $t=0$.</li>
+                <li><strong>Three-Phase Circuits:</strong> Solving balanced Y-Y or Y-Δ systems to find line currents and voltages.</li>
+                <li><strong>Nodal Analysis:</strong> The counterpart to Mesh. Be prepared for supernodes.</li>
+                <li><strong>Equivalent Resistance/Impedance (Req / Zeq):</strong> Often requires <strong>Y-Δ (Wye-Delta) Transformation</strong> to solve.</li>
+            </ul>
+
+            <h2>Tier 3: Supporting Topics (Medium Priority)</h2>
+            <p>These topics round out the exams.</p>
+            <ul>
+                <li><strong>AC Power (Power Factor, Complex Power):</strong> Calculating P, Q, and S, and power factor correction.</li>
+                <li><strong>RLC Circuits & Resonance:</strong> Finding the natural response ($s_1, s_2$) and resonant frequency, bandwidth, and Q-factor.</li>
+                <li><strong>Filters:</strong> Basic low-pass RC filter design.</li>
+                <li><strong>RMS Value:</strong> Defining and calculating the RMS value.</li>
+            </ul>
+
+            <div class="card card-plan">
+                <div class="card-header">💡 Overall Suggestions and Study Plan</div>
+                <ol>
+                    <li><strong>Start with DC:</strong> Do not look at AC circuits yet.</li>
+                    <li><strong>Master the "Big Three" + Mesh/Nodal:</strong> Practice DC Thevenin, Norton, Superposition, and Mesh/Nodal.</li>
+                    <li><strong>Add Dependent Sources:</strong> Re-do all those problems, but only using examples <strong>with dependent sources</strong>. This is the most important skill.</li>
+                    <li><strong>Memorize Theory:</strong> Memorize the <strong>proof</strong> for Max Power Transfer (50% efficiency) and the <strong>derivation</strong> for Y-Δ transformation.</li>
+                    <li><strong>Move to AC:</strong> "Upgrade" your DC knowledge to the AC phasor domain. Practice Thevenin, Mesh, and Superposition all over again with complex impedance: $R$, $j\omega L$, $\frac{1}{j\omega C}$.</li>
+                    <li><strong>Practice Transients:</strong> Focus on 1st-order RC and RL circuits with switches.</li>
+                    <li><strong>Final Topics:</strong> Finish with Three-Phase systems and AC Power Factor calculations.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="Physics" class="tab-content">
+            <div class="card">
+                <div class="card-header">Overall Insight</div>
+                This is a "classic" physics paper. The teacher is far more interested in your ability to <strong>derive the fundamental equations from first principles</strong> than in your ability to solve complex numerical problems.
+            </div>
+
+            <h2>Tier 1: The "Must-Know" Derivations (Highest Priority)</h2>
+            <p>These are the absolute core of the course and appear on virtually every single Final Exam.</p>
+            <ul>
+                <li><strong>Gauss's Law & Its Applications:</strong> This is the most important topic.
+                    <ul>
+                        <li><strong>The Derivation:</strong> State Gauss's Law and use it to derive the E-field for: an infinite line of charge, a non-conducting sphere, and an infinite plane.</li>
+                        <li><strong>The Theory:</strong> Be able to show how Coulomb's Law can be derived <strong>from</strong> Gauss's Law.</li>
+                    </ul>
+                </li>
+                <li><strong>Electric Dipole:</strong> This is the teacher's second-favorite topic.
+                    <ul>
+                        <li><strong>The Derivation:</strong> Derive the expression for the <strong>electric field ($E$)</strong> and/or the <strong>electric potential ($V$)</strong> at a point (on the axis, on the bisector, or at a general point P).</li>
+                        <li><strong>The Theory:</strong> Derive the <strong>torque ($\tau$)</strong> and <strong>potential energy ($U$)</strong> for a dipole in an external E-field.</li>
+                    </ul>
+                </li>
+                <li><strong>Capacitance Derivations:</strong> A guaranteed high-mark question.
+                    <ul>
+                        <li><strong>The Derivations:</strong> Derive the capacitance ($C$) for: a <strong>parallel plate</strong>, a <strong>spherical</strong>, and a <strong>cylindrical</strong> capacitor.</li>
+                        <li><strong>The Theory:</strong> Derive the energy stored in a capacitor ($U = \frac{1}{2}CV^2$).</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>Tier 2: Core Magnetism & Circuits (High Priority)</h2>
+            <p>These topics form the second half of the course.</p>
+            <ul>
+                <li><strong>Ampere's Law & Biot-Savart Law:</strong> State the laws and use them to derive the B-field for: a long straight wire, a solenoid, a toroid, and the center of a circular coil.</li>
+                <li><strong>Hall Effect:</strong> Explain the Hall Effect and show how it is used to find the <strong>carrier concentration ($n$)</strong>.</li>
+                <li><strong>RL & LC Circuits (Theory):</strong> Derive the expression for current in a <strong>charging RL circuit</strong> and the oscillation frequency for an <strong>LC circuit</strong> ($\omega = \frac{1}{\sqrt{LC}}$).</li>
+                <li><strong>Faraday's & Lenz's Law:</strong> You must be able to state and explain both laws.</li>
+            </ul>
+
+            <h2>Tier 3: Supporting Concepts (Medium Priority)</h2>
+            <p>These are the "smaller" questions that fill out the exams.</p>
+            <ul>
+                <li><strong>Coulomb's Law Calculations:</strong> Simple problems (e.g., protons in a nucleus).</li>
+                <li><strong>Electric Potential:</strong> Calculating the potential energy of a system of point charges.</li>
+                <li><strong>Equivalent Capacitance:</strong> Simple series/parallel calculations.</li>
+                <li><strong>Ohm's Law (Microscopic):</strong> Deriving the microscopic form of resistivity ($\rho = \frac{m}{e^2 n \tau}$).</li>
+            </ul>
+
+            <div class="card card-plan">
+                <div class="card-header">💡 Overall Suggestions and Study Plan</div>
+                <ol>
+                    <li><strong>Prioritize Derivations:</strong> Do not just memorize the final formulas. Write out the full derivation for every item in <strong>Tier 1</strong> and <strong>Tier 2</strong> by hand.</li>
+                    <li><strong>Make a "Law" Sheet:</strong> Write down the exact definitions for <strong>Gauss's Law</strong>, <strong>Biot-Savart Law</strong>, <strong>Ampere's Law</strong>, <strong>Faraday's Law</strong>, and <strong>Lenz's Law</strong>.</li>
+                    <li><strong>Practice the Dipole:</strong> The E-field/Potential derivation for a general point (P) on a dipole is complex, but it's a favorite. Master it.</li>
+                    <li><strong>Don't Over-focus on Calculations:</strong> The calculations are almost always straightforward. The <strong>real</strong> marks are in the derivations.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="Calculus" class="tab-content">
+            <div class="card">
+                <div class="card-header">Overall Insight</div>
+                This is not a "plug-and-chug" calculus course. Your teacher is focused on <strong>proofs, specific theorems, and complex differentiation/integration techniques</strong>. They consistently ask for the same set of difficult problems.
+            </div>
+
+            <h2>Tier 1: The "Must-Know" Topics (Highest Priority)</h2>
+            <p>These are the most critical, high-mark topics. They appear on almost every single Final Exam.</p>
+            <ul>
+                <li><strong>Leibnitz's Theorem (n-th Derivative):</strong> This is the <strong>absolute favorite topic</strong>.
+                    <ul>
+                        <li><strong>The Problem:</strong> Given a complex function (e.g., $y = (x + \sqrt{x^2+1})^m$ or $y = \cos(m \cdot \cos^{-1}x)$), you must prove a relationship involving $y_{n+2}$, $y_{n+1}$, and $y_n$.</li>
+                        <li><strong>Strategy:</strong> Practice this <strong>exact</strong> problem type. The steps are always: find $y_1$, find $y_2$, create a differential equation, then apply Leibnitz's Theorem.</li>
+                    </ul>
+                </li>
+                <li><strong>Continuity & Differentiability Analysis:</strong> A guaranteed "Part 1" question.
+                    <ul>
+                        <li><strong>The Problem:</strong> Given a piecewise function (e.g., $f(x) = x^2 \sin(1/x)$ at $x=0$), you must check for continuity and differentiability.</li>
+                        <li><strong>Strategy:</strong> You <strong>must</strong> use the formal "first principles" (limit definition of the derivative) to prove this.</li>
+                    </ul>
+                </li>
+                <li><strong>Euler's Theorem (Homogeneous Functions):</strong> A recurring proof-based question.
+                    <ul>
+                        <li><strong>The Problem:</strong> Given a function (e.g., $u = \frac{x^{1/4}+y^{1/4}}{x^{1/5}+y^{1/5}}$ or $u = \sin^{-1}(\frac{x^2+y^2}{x+y})$), <strong>state</strong> Euler's theorem and <strong>verify</strong> it or prove a related relationship like $x\frac{\partial u}{\partial x} + y\frac{\partial u}{\partial y} = \sin(2u)$.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h2>Tier 2: Core Final Exam Topics (High Priority)</h2>
+            <p>These topics are the foundation of the rest of the exam.</p>
+            <ul>
+                <li><strong>Function Analysis & Curve Sketching:</strong> A very common 10-14 mark question. Find <strong>everything</strong>: intervals of increase/decrease, concave up/down, extrema, inflection points, and asymptotes.</li>
+                <li><strong>Gamma & Beta Functions:</strong> The main integration topic.
+                    <ul>
+                        <li><strong>The Problem:</strong> <strong>Prove</strong> the relationship $\beta(m,n) = \frac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}$ and the related "Wallis's Formula" for $\int_0^{\pi/2} \sin^p\theta \cos^q\theta \,d\theta$.</li>
+                        <li><strong>Strategy:</strong> Memorize these proofs.</li>
+                    </ul>
+                </li>
+                <li><strong>Integration as Limit of a Sum (Riemann Sum):</strong> Evaluate a complex limit by first converting it into a definite integral.</li>
+                <li><strong>Jacobians:</strong> Show that the Jacobian for a change of variables (e.g., Cartesian to Spherical $\frac{\partial(x,y,z)}{\partial(\rho,\theta,\varphi)}$) equals a specific value (like $\rho^2 \sin\theta$).</li>
+                <li><strong>Maclaurin/Taylor Series:</strong> State the theorems and use a polynomial to approximate a value (e.g., $\sqrt{e}$) to a decimal place.</li>
+            </ul>
+
+            <h2>Tier 3: Supporting Topics (Medium Priority)</h2>
+            <p>Common in Incourse exams and fill in the gaps on Finals.</p>
+            <ul>
+                <li><strong>Graph Transformations (Incourse):</strong> Given $f(x)$, sketch $y = 1 - f(x+2)$.</li>
+                <li><strong>Finding Area/Volume:</strong> Area between curves, area of a cycloid, volume of a sphere.</li>
+                <li><strong>Multiple Integrals:</strong> Evaluating double and triple integrals over a defined region.</li>
+            </ul>
+
+            <div class="card card-plan">
+                <div class="card-header">💡 Overall Suggestions and Study Plan</div>
+                <ol>
+                    <li><strong>Leibnitz's Theorem First:</strong> Master this topic. Practice the $y_{n+2}$ proofs until you cannot get them wrong.</li>
+                    <li><strong>Focus on Proofs, Not Just Problems:</strong> Create a "Proof Sheet" for Leibnitz, Euler, Beta-Gamma Relationship ($\beta(m,n) = \dots$), Wallis's Formula, and the Jacobian.</li>
+                    <li><strong>Master Piecewise Functions:</strong> Practice the <strong>formal</strong> limit definition of continuity and differentiability, especially for $x^2 \sin(1/x)$.</li>
+                    <li><strong>Practice Curve Sketching:</strong> Develop a rigid, step-by-step procedure for the "Function Analysis" questions.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="Linear" class="tab-content">
+            <div class="card">
+                <div class="card-header">Overall Insight</div>
+                This course is a tale of two subjects: <strong>Linear Algebra (The "Theory")</strong> and <strong>Numerical Analysis (The "Methods")</strong>. The teacher tests application by asking you to set up real-world problems (circuits, traffic) as linear systems.
+            </div>
+
+            <h2>Tier 1: The "Must-Know" Topics (Highest Priority)</h2>
+            <p>These topics appear on every final exam in some form.</p>
+            <ul>
+                <li><strong>Solving Systems of Linear Equations:</strong> The #1 most important skill.
+                    <ul>
+                        <li><strong>Gaussian Elimination:</strong> The primary method.</li>
+                        <li><strong>Application Problems:</strong> You <strong>must</strong> be able to look at an <strong>electrical circuit</strong> or <strong>traffic network</strong>, set up the linear equations, and solve.</li>
+                        <li><strong>Finding 'a' for Solution Types:</strong> Find when a system with a variable 'a' has no, one, or infinitely many solutions.</li>
+                    </ul>
+                </li>
+                <li><strong>Root Finding Methods (Numerical):</strong> You are guaranteed to get one of these.
+                    <ul>
+                        <li><strong>Bisection Method</strong></li>
+                        <li><strong>Newton-Raphson Method</strong> (Often asks for "invalid initial choices").</li>
+                    </ul>
+                </li>
+                <li><strong>Eigenvalues and Eigenspaces:</strong> A classic final exam question. You must be able to <strong>define</strong> them, <strong>calculate</strong> the eigenvalues ($\lambda$), and find the <strong>bases for the eigenspaces</strong>.</li>
+                <li><strong>Numerical Integration (from a Table):</strong> A guaranteed, straightforward question.
+                    <ul>
+                        <li><strong>Trapezoidal Rule</strong></li>
+                        <li><strong>Simpson's 1/3 Rule</strong></li>
+                    </ul>
+                </li>
+                <li><strong>Interpolation (from a Table):</strong> Another guaranteed question.
+                    <ul>
+                        <li><strong>Lagrange's Interpolation</strong></li>
+                        <li><strong>Newton's Divided Difference</strong></li>
+                    </ul>
+                </li>
+                <li><strong>Linear Independence (LI):</strong> Define it and determine if a set of vectors (in $R^3$ or $P_2$) is LI.</li>
+            </ul>
+
+            <h2>Tier 2: Core Final Exam Topics (High Priority)</h2>
+            <p>Very common topics that round out the core of the exams.</p>
+            <ul>
+                <li><strong>Cayley-Hamilton Theorem:</strong> <strong>State</strong> the theorem and <strong>use it to find the inverse ($A^{-1}$)</strong> of a matrix.</li>
+                <li><strong>Basis and Coordinate Vectors:</strong> Show a set forms a <strong>basis</strong> and find the <strong>coordinate vector</strong> of 'v' relative to a basis 'S'.</li>
+                <li><strong>Numerical Differentiation (from a Table):</strong> Finding <strong>velocity and acceleration</strong> from a table of distance vs. time.</li>
+                <li><strong>Rank and Nullity:</strong> Define and find the rank and nullity of a matrix.</li>
+                <li><strong>Subspaces:</strong> Define and <strong>prove</strong> if a given set W (e.g., $W = \{ A \in M_{22} : a+b+c+d=0 \}$) is a subspace.</li>
+            </ul>
+            
+            <h2>Tier 3: Supporting Topics (Medium Priority)</h2>
+            <p>These topics appear less frequently.</p>
+            <ul>
+                <li><strong>Solving Systems with Matrix Inverse:</strong> Solve a system by <strong>first</strong> finding $A^{-1}$.</li>
+                <li><strong>Linear Transformations (Kernel/Range):</strong> Define and find the basis/dimension for the Kernel and Range.</li>
+                <li><strong>Specialized Numerical Methods:</strong> Finite Difference Method, Natural Cubic Spline.</li>
+            </ul>
+
+            <div class="card card-plan">
+                <div class="card-header">💡 Overall Suggestions and Study Plan</div>
+                <ol>
+                    <li><strong>Divide and Conquer:</strong> Treat this as two separate courses: Numerical Methods and Linear Algebra.</li>
+                    <li><strong>Master the "Methods" First:</strong> The Numerical part is the easiest place to score full marks. Create a "formula sheet" for Bisection, Newton-Raphson, Lagrange, Newton's DD, Trapezoidal, and Simpson's.</li>
+                    <li><strong>Master the "Big 3" LA Skills:</strong> (1) Solving Systems (especially circuit/traffic applications), (2) Finding Eigenvalues/Eigenspaces ($\det(A - \lambda I) = 0$), and (3) Checking for Linear Independence.</li>
+                    <li><strong>Memorize LA Proofs & Definitions:</strong> Make a sheet for definitions (LI, Subspace, Basis, Eigenvalue) and key proofs (how to prove a subspace, how to use Cayley-Hamilton for $A^{-1}$).</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="English" class="tab-content">
+            <div class="card">
+                <div class="card-header">Overall Insight</div>
+                This course is about <strong>memorizing formats and mastering specific grammar rules</strong>. The teacher is extremely consistent, testing the <strong>exact same</strong> formats (complaint letters, CVs) and <strong>exact same</strong> grammar errors (especially prepositions) year after year.
+            </div>
+
+            <h2>Tier 1: The "Must-Know" Topics (Highest Priority)</h2>
+            <p>These are the most predictable, high-mark questions.</p>
+            <ul>
+                <li><strong>The Complaint Letter:</strong> The single most important topic.
+                    <ul>
+                        <li><strong>The Prompt:</strong> "You ordered furniture/products, they arrived late, had poor quality, or were the wrong item. Write a complaint letter." This prompt is repeated almost verbatim.</li>
+                        <li><strong>Strategy:</strong> <strong>Memorize a template for this exact prompt.</strong> Also know the "dos and don'ts" as a theory question.</li>
+                    </ul>
+                </li>
+                <li><strong>Reading Comprehension:</strong> Every Final Exam has a long passage followed by questions.</li>
+                <li><strong>Correcting Sentences (Prepositions!):</strong> The teacher's favorite grammar test. 90% of the errors are wrong prepositions.
+                    <ul>
+                        <li><code>Afraid <strong>of</strong></code> (not "from")</li>
+                        <li><code>Accustomed <strong>to</strong></code> (not "with")</li>
+                        <li><code>Believe <strong>in</strong></code> (not "to")</li>
+                        <li><code>Angry <strong>with</strong></code> (not "against")</li>
+                        <li><code>Congratulate <strong>on</strong></code> (not "for")</li>
+                    </ul>
+                </li>
+                <li><strong>Right Form of Verbs:</strong> The other major grammar topic. Review rules for "had better," "with a view to," and "It is high time."</li>
+            </ul>
+
+            <h2>Tier 2: Core Final Exam Topics (High Priority)</h2>
+            <p>These topics are the foundation of the rest of the exam.</p>
+            <ul>
+                <li><strong>Essay Writing (Argumentative/Compare-Contrast):</strong> The main "long-form" writing task (e.g., "Public vs. Private Universities" or "Rickshaws should be banned").</li>
+                <li><strong>CV & Cover Letter Writing:</strong> The other key "Technical Communication" format.
+                    <ul>
+                        <li><strong>The Task:</strong> Write a CV/Cover Letter for a specific job (e.g., "Lecturer in EEE at DU").</li>
+                        <li><strong>The Theory:</strong> You <strong>must</strong> know the <strong>differences between a CV, Resume, and Biodata</strong>.</li>
+                    </ul>
+                </li>
+                <li><strong>Reading Skills (Theory):</strong> You will be asked to write short notes on: <strong>Skimming</strong>, <strong>Scanning</strong>, and <strong>Annotation</strong>.</li>
+                <li><strong>Grammar (Conditionals & Voice Change):</strong> Completing "If I were you..." sentences and changing from active to passive.</li>
+            </ul>
+
+            <h2>Tier 3: Supporting Topics (Medium Priority)</h2>
+            <p>Mostly from the Incourse or less frequent on Finals.</p>
+            <ul>
+                <li><strong>Phonetics (Incourse):</strong> Identifying word stress, transcribing words, and defining monophthongs/diphthongs.</li>
+                <li><strong>Summary vs. Précis:</strong> Knowing the difference is a common theory question.</li>
+            </ul>
+
+            <div class="card card-plan">
+                <div class="card-header">💡 Overall Suggestions and Study Plan</div>
+                <ol>
+                    <li><strong>Create a "Cheat Sheet":</strong> Your top priority. It must have:
+                        <ul>
+                            <li>A perfect, memorized template for the <strong>Complaint Letter</strong>.</li>
+                            <li>A template for a <strong>CV and Cover Letter</strong>.</li>
+                            <li>A list of the <strong>correct prepositions</strong> (Afraid of, Accustomed to, etc.).</li>
+                            <li>The definitions for <strong>CV vs. Resume</strong>, <strong>Summary vs. Précis</strong>, and <strong>Skimming vs. Scanning</strong>.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Drill the Grammar:</strong> Do all the "Right Form of Verbs," "Correct the Sentence," and "Conditional" exercises from the PYQs. The patterns are identical.</li>
+                    <li><strong>Practice One Essay and One Reading Comp:</strong> Time yourself to get the speed right.</li>
+                    <li><strong>Don't Over-Stress Phonetics:</strong> This is a minor, early-term topic. Your final grade depends on the Complaint Letter, Essay, and Grammar.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openCourse(evt, courseName) {
+            // Get all tab content elements and hide them by removing 'active'
+            var tabcontent = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].className = tabcontent[i].className.replace(" active", "");
+            }
+
+            // Get all tab link elements and remove 'active'
+            var tablinks = document.getElementsByClassName("tab-link");
+            for (var i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab and add 'active' to the button
+            document.getElementById(courseName).className += " active";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+
+</body>
+</html>
