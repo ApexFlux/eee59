@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Routine Dashboard</title>
+    
+    <!-- Import Google Font: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Import Google Font: Roboto Mono for timers -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Global Styles --- */
+        :root {
+            --primary-blue: #0072ff;
+            --primary-blue-dark: #005aaa;
+            --primary-glow: #00d4ff;
+            --text-dark: #333;
+            --text-light: #557;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
+            --card-shadow: 0 10px 30px rgba(0, 47, 95, 0.07);
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            background-image: var(--bg-gradient);
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Main Container --- */
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 1100px; /* Increased max-width for new column */
+            overflow: hidden;
+            border-top: 5px solid transparent;
+            border-image: linear-gradient(45deg, var(--primary-blue), var(--primary-glow)) 1;
+        }
+
+        /* --- Header --- */
+        .header {
+            padding: 32px 40px 0; /* Reduced bottom padding */
+            text-align: center;
+        }
+
+        .header h1 {
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-blue-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.25em;
+            color: var(--text-light);
+            margin: 12px 0 0;
+            font-weight: 600;
+        }
+
+        /* --- Master Countdown Timer --- */
+        .master-countdown {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 32px 40px;
+            padding: 24px;
+            background: #fdfdff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 81, 153, 0.05) inset;
+            flex-wrap: wrap; /* Allows stacking on mobile */
+        }
+
+        .countdown-box {
+            background: linear-gradient(145deg, var(--primary-blue), var(--primary-blue-dark));
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-width: 90px;
+            box-shadow: 0 8px 16px rgba(0, 114, 255, 0.2);
+        }
+
+        .countdown-box span {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 3em;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+
+        .countdown-box label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        /* Style for the "Exam Started" message */
+        .exam-started-message {
+            font-size: 2em;
+            font-weight: 700;
+            color: #28a745;
+            padding: 40px 0;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Table Styling --- */
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 24px 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 22px 24px;
+            font-size: 1em;
+            vertical-align: middle;
+        }
+
+        /* Table Header */
+        thead tr {
+            background-image: linear-gradient(45deg, var(--primary-blue), var(--primary-glow));
+            color: #ffffff;
+        }
+        
+        thead th {
+            font-weight: 600;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        thead th:first-child { border-radius: 8px 0 0 0; }
+        thead th:last-child { border-radius: 0 8px 0 0; }
+
+        /* Table Body */
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8faff;
+            transform: scale(1.01);
+            box-shadow: 0 8px 20px rgba(0, 81, 153, 0.1);
+            border-radius: 8px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- Specific Cell Styling --- */
+        .icon-cell {
+            font-size: 2em;
+            text-align: center;
+            width: 60px;
+        }
+
+        .date-cell {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--primary-blue-dark);
+            white-space: nowrap;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .day-tag {
+            background-color: #eef2f7;
+            color: #5a7a9d;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .code-tag {
+            background-color: #fff0f6;
+            color: #d81b60;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.9em;
+            font-weight: 600;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: nowrap;
+        }
+
+        /* --- Individual Countdown Tags --- */
+        .time-left-tag {
+            background-color: #f0f0f0;
+            color: #555;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .time-left-tag.in-progress {
+            background-color: #ffebee;
+            color: #d90429;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(217, 4, 41, 0.3);
+        }
+
+        .time-left-tag.finished {
+            background-color: #f5f5f5;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header">
+            <h1>Exam Routine</h1>
+            <p><strong>Time:</strong> 1:30 PM - 4:30 PM (3 Hours)</p>
+        </div>
+
+        <!-- Master Countdown Timer -->
+        <div class="master-countdown" id="master-countdown-container">
+            <div class="countdown-box">
+                <span id="countdown-days">00</span>
+                <label>Days</label>
+            </div>
+            <div class="countdown-box">
+                <span id="countdown-hours">00</span>
+                <label>Hours</label>
+            </div>
+            <div class="countdown-box">
+                <span id="countdown-minutes">00</span>
+                <label>Minutes</label>
+            </div>
+            <div class="countdown-box">
+                <span id="countdown-seconds">00</span>
+                <label>Seconds</label>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%;"><!-- Icon --></th>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Course Name</th>
+                        <th>Course Code</th>
+                        <th>Starts In</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Row 1 -->
+                    <tr>
+                        <td class="icon-cell">⚡️</td>
+                        <td class="date-cell">23/11/2025</td>
+                        <td><span class="day-tag">Sunday</span></td>
+                        <td class="subject-name">Electrical Circuit Analysis</td>
+                        <td><span class="code-tag">0713-EEE-1101</span></td>
+                        <!-- Individual timer cell -->
+                        <td><span id="timer-0" class="time-left-tag">Loading...</span></td>
+                    </tr>
+                    <!-- Row 2 -->
+                    <tr>
+                        <td class="icon-cell">🧲</td>
+                        <td class="date-cell">27/11/2025</td>
+                        <td><span class="day-tag">Thursday</span></td>
+                        <td class="subject-name">Electricity and Magnetism</td>
+                        <td><span class="code-tag">0533-PHY-1103</span></td>
+                        <td><span id="timer-1" class="time-left-tag">Loading...</span></td>
+                    </tr>
+                    <!-- Row 3 -->
+                    <tr>
+                        <td class="icon-cell">📈</td>
+                        <td class="date-cell">07/12/2025</td>
+                        <td><span class="day-tag">Sunday</span></td>
+                        <td class="subject-name">Differential and Integral Calculus</td>
+                        <td><span class="code-tag">0541-MAT-1105</span></td>
+                        <td><span id="timer-2" class="time-left-tag">Loading...</span></td>
+                    </tr>
+                    <!-- Row 4 -->
+                    <tr>
+                        <td class="icon-cell">📐</td>
+                        <td class="date-cell">11/12/2025</td>
+                        <td><span class="day-tag">Thursday</span></td>
+                        <td class="subject-name">Linear Algebra and Numerical Analysis</td>
+                        <td><span class="code-tag">0541-MAT-1107</span></td>
+                        <td><span id="timer-3" class="time-left-tag">Loading...</span></td>
+                    </tr>
+                    <!-- Row 5 -->
+                    <tr>
+                        <td class="icon-cell">✍️</td>
+                        <td class="date-cell">15/12/2025</td>
+                        <td><span class="day-tag">Monday</span></td>
+                        <td class="subject-name">English for Technical Communication</td>
+                        <td><span class="code-tag">0231-GED-1109</span></td>
+                        <td><span id="timer-4" class="time-left-tag">Loading...</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript for all the dynamic logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- ALL TIMES ARE IN YOUR +06:00 TIMEZONE ---
+            // This ensures they are correct regardless of where the file is opened.
+
+            // Target dates for individual exams
+            const examDates = [
+                new Date("2025-11-23T13:30:00+06:00"),
+                new Date("2025-11-27T13:30:00+06:00"),
+                new Date("2025-12-07T13:30:00+06:00"),
+                new Date("2025-12-11T13:30:00+06:00"),
+                new Date("2025-12-15T13:30:00+06:00")
+            ];
+
+            // Master countdown targets
+            const firstExamStart = examDates[0];
+            // "Exam Started" message lasts for 24 hours after the first exam starts
+            const firstExamMessageEnd = new Date(firstExamStart.getTime() + 24 * 60 * 60 * 1000);
+            
+            // Exam duration (3 hours) in milliseconds
+            const examDuration = 3 * 60 * 60 * 1000;
+
+            // Get master countdown elements
+            const countdownContainer = document.getElementById('master-countdown-container');
+            const daysEl = document.getElementById('countdown-days');
+            const hoursEl = document.getElementById('countdown-hours');
+            const minutesEl = document.getElementById('countdown-minutes');
+            const secondsEl = document.getElementById('countdown-seconds');
+
+            function updateTimers() {
+                const now = new Date();
+
+                // --- 1. MASTER COUNTDOWN LOGIC ---
+                const diffMaster = firstExamStart.getTime() - now.getTime();
+
+                if (diffMaster > 0) {
+                    // --- Countdown is active ---
+                    const days = Math.floor(diffMaster / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diffMaster % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diffMaster % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diffMaster % (1000 * 60)) / 1000);
+
+                    // Update HTML (with padding)
+                    daysEl.innerText = String(days).padStart(2, '0');
+                    hoursEl.innerText = String(hours).padStart(2, '0');
+                    minutesEl.innerText = String(minutes).padStart(2, '0');
+                    secondsEl.innerText = String(seconds).padStart(2, '0');
+
+                } else if (now.getTime() < firstExamMessageEnd.getTime()) {
+                    // --- "Exam Started" period (first 24h) ---
+                    countdownContainer.innerHTML = '<div class="exam-started-message">🎉 Exam Started! Good Luck! 🎉</div>';
+                
+                } else {
+                    // --- Vanish after 24h ---
+                    countdownContainer.style.display = 'none';
+                }
+
+                // --- 2. INDIVIDUAL EXAM COUNTDOWN LOGIC ---
+                examDates.forEach((examDate, index) => {
+                    const timerEl = document.getElementById(`timer-${index}`);
+                    if (!timerEl) return;
+
+                    const diffExam = examDate.getTime() - now.getTime();
+                    const examEnd = new Date(examDate.getTime() + examDuration);
+
+                    if (diffExam > 0) {
+                        // --- Exam is in the future ---
+                        const days = Math.floor(diffExam / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diffExam % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        
+                        timerEl.innerText = `in ${days}d ${hours}h`;
+                        timerEl.className = 'time-left-tag'; // Reset class
+
+                    } else if (now.getTime() < examEnd.getTime()) {
+                        // --- Exam is "In Progress" ---
+                        timerEl.innerText = 'In Progress';
+                        timerEl.className = 'time-left-tag in-progress';
+
+                    } else {
+                        // --- Exam is "Finished" ---
+                        timerEl.innerText = 'Finished';
+                        timerEl.className = 'time-left-tag finished';
+                    }
+                });
+            }
+
+            // Run once immediately, then set an interval to update every second
+            updateTimers();
+            setInterval(updateTimers, 1000);
+        });
+    </script>
+
+</body>
+</html>
