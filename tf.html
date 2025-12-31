@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DU EEE Exam Schedule</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Lexend:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --navy: #0f172a;
+            --teal: #0d9488;
+            --sky: #38bdf8;
+            --slate: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: var(--navy);
+            background-image: radial-gradient(circle at 2px 2px, rgba(13, 148, 136, 0.15) 1px, transparent 0);
+            background-size: 24px 24px;
+            margin: 0;
+            padding: 0;
+            color: #f8fafc;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #115e59 0%, #0f172a 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--teal);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--sky);
+            font-weight: 800;
+        }
+
+        .timer-box {
+            margin-top: 15px;
+            background: var(--glass);
+            border-radius: 20px;
+            padding: 15px;
+            border: 1px solid var(--card-border);
+        }
+
+        .timer {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 5px 0;
+        }
+
+        .next-subject-badge {
+            display: inline-block;
+            background: var(--teal);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+        }
+
+        /* Schedule Container */
+        .container {
+            padding: 25px 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: left;
+            margin-bottom: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--slate);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-left: 3px solid var(--teal);
+            padding-left: 10px;
+        }
+
+        .card {
+            background: var(--glass);
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card.active {
+            border: 1px solid var(--sky);
+            background: rgba(56, 189, 248, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.done {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .date-box {
+            background: rgba(13, 148, 136, 0.2);
+            color: var(--sky);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 60px;
+            margin-right: 18px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .date-box .day-num {
+            display: block;
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .date-box .month {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .info-box { flex: 1; }
+
+        .subject {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .details {
+            font-size: 12px;
+            color: var(--slate);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .venue-badge {
+            font-size: 10px;
+            color: var(--teal);
+            font-weight: 700;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--slate);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>⚡ 1st Sem Final Exams ⚡</h1>
+        <div class="timer-box">
+            <div class="timer" id="countdown">00d : 00h : 00m</div>
+            <div class="next-subject-badge" id="next-subject">Checking Schedule...</div>
+        </div>
+    </div>
+
+    <div class="container" id="schedule-container">
+        <div class="section-header">Official Exam Roadmap ⚡</div>
+        </div>
+
+    <div class="footer">
+        Stay Focused at Curzon Hall 🏛️<br>
+        <span style="color: var(--teal); font-weight: 600;">Best of luck to the whole batch! 🚀</span>
+    </div>
+
+    <script>
+        const schedule = [
+            { day: "04", month: "Jan", year: 2026, title: "Electrical Circuit Analysis", code: "EEE-1101" },
+            { day: "08", month: "Jan", year: 2026, title: "Electricity and Magnetism", code: "PHY-1103" },
+            { day: "12", month: "Jan", year: 2026, title: "Differential & Integral Calculus", code: "MAT-1105" },
+            { day: "18", month: "Jan", year: 2026, title: "Linear Algebra & Numerical Analysis", code: "MAT-1107" },
+            { day: "22", month: "Jan", year: 2026, title: "English for Technical Communication", code: "GED-1109" }
+        ];
+
+        const months = { "Jan": 0, "Dec": 11 };
+
+        function init() {
+            const container = document.getElementById('schedule-container');
+            const timerEl = document.getElementById('countdown');
+            const subjectEl = document.getElementById('next-subject');
+            
+            const now = new Date();
+            let nextExamIndex = -1;
+
+            schedule.forEach((item, index) => {
+                const examDate = new Date(item.year, months[item.month], parseInt(item.day), 13, 30, 0);
+                const examEnd = new Date(item.year, months[item.month], parseInt(item.day), 16, 30, 0);
+
+                let stateClass = "";
+                if (now > examEnd) {
+                    stateClass = "done";
+                } else if (nextExamIndex === -1) {
+                    stateClass = "active";
+                    nextExamIndex = index;
+                }
+
+                const html = `
+                    <div class="card ${stateClass}">
+                        <div class="date-box">
+                            <span class="day-num">${item.day}</span>
+                            <span class="month">${item.month}</span>
+                        </div>
+                        <div class="info-box">
+                            <div class="subject">${item.title}</div>
+                            <div class="details">${item.code} • 01:30 PM</div>
+                            <span class="venue-badge">📍 CURZON HALL</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+
+            if (nextExamIndex !== -1) {
+                const nextItem = schedule[nextExamIndex];
+                subjectEl.innerText = "UPCOMING: " + nextItem.title;
+                
+                const targetDate = new Date(nextItem.year, months[nextItem.month], parseInt(nextItem.day), 13, 30, 0);
+
+                setInterval(() => {
+                    const current = new Date();
+                    const diff = targetDate - current;
+
+                    if (diff <= 0) {
+                        timerEl.innerText = "EXAM LIVE ⚡";
+                        return;
+                    }
+
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                    timerEl.innerText = `${days}d : ${hours}h : ${mins}m`;
+                }, 1000);
+            } else {
+                timerEl.innerText = "ALL DONE 🎉";
+                subjectEl.innerText = "Enjoy the break!";
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
