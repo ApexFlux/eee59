@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EEE Class Routine | DU</title>
+    <title>EEE Class Routine | DU (Ramadan)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
@@ -42,7 +42,7 @@
         header {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             width: 100%;
-            padding: 20px 0 40px;
+            padding: 20px 0 45px;
             color: white;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -51,6 +51,18 @@
 
         h1 { margin: 0; font-weight: 500; font-size: 1.5rem; }
         p { margin: 5px 0 0; opacity: 0.9; font-size: 0.9rem; }
+        
+        .ramadan-badge {
+            display: inline-block;
+            background-color: #ffca28;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
 
         .nav-container {
             display: flex;
@@ -59,10 +71,12 @@
             margin-top: -25px;
             flex-wrap: wrap;
             padding: 0 10px;
+            position: relative;
+            z-index: 10;
         }
 
         .day-btn {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border: none;
             padding: 10px 20px;
             border-radius: 25px;
@@ -71,7 +85,6 @@
             color: var(--text-secondary);
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            backdrop-filter: blur(5px);
         }
 
         .day-btn.active {
@@ -84,7 +97,7 @@
         #routine-container {
             width: 90%;
             max-width: 600px;
-            margin-top: 20px;
+            margin-top: 25px;
             margin-bottom: 40px;
         }
 
@@ -131,7 +144,7 @@
 
         .time-box {
             text-align: center;
-            min-width: 80px;
+            min-width: 85px;
             padding-right: 15px;
             border-right: 1px solid #eee;
             margin-right: 15px;
@@ -169,6 +182,7 @@
     <header>
         <h1>My Class Routine</h1>
         <p>Dept of EEE, DU | 1st Year 2nd Semester</p>
+        <div class="ramadan-badge">🌙 Ramadan Schedule</div>
     </header>
 
     <div class="nav-container" id="nav-container">
@@ -190,32 +204,33 @@
             "MA":  "Muntasir Alam"
         };
 
+        // RAMADAN UPDATED TIMINGS
         const routine = {
             0: [ // Sunday
-                { time: "10:00 - 11:25", code: "0533-PHY-1203", name: "Optics", teacher: "IHS", type: "PHY" },
-                { time: "11:30 - 12:55", code: "0533-PHY-1201", name: "Modern Physics", teacher: "SMM", type: "PHY" },
-                { time: "01:30 - 04:30", code: "0533-PHY-1204", name: "Physics Laboratory (Group A)", teacher: "SMM, MJR", type: "PHY" }
+                { time: "10:20 - 11:30", code: "0533-PHY-1203", name: "Optics", teacher: "IHS", type: "PHY" },
+                { time: "11:40 - 12:50", code: "0533-PHY-1201", name: "Modern Physics", teacher: "SMM", type: "PHY" },
+                { time: "01:30 - 03:30", code: "0533-PHY-1204", name: "Physics Laboratory (Group A)", teacher: "SMM, MJR", type: "PHY" }
             ],
             1: [ // Monday
-                { time: "08:30 - 09:55", code: "0613-CSE-1205", name: "Computer Programming", teacher: "MNT", type: "CSE" },
-                { time: "10:00 - 11:25", code: "0531-CHE-1207", name: "Chemistry", teacher: "TUR", type: "CHE" },
-                { time: "11:30 - 12:55", code: "0533-PHY-1203", name: "Optics", teacher: "IHS", type: "PHY" },
-                { time: "01:30 - 04:30", code: "0613-CSE-1206", name: "Computer Programming Lab (Group B)", teacher: "KA, MNT", type: "CSE" }
+                { time: "09:00 - 10:10", code: "0613-CSE-1205", name: "Computer Programming", teacher: "MNT", type: "CSE" },
+                { time: "10:20 - 11:30", code: "0531-CHE-1207", name: "Chemistry", teacher: "TUR", type: "CHE" },
+                { time: "11:40 - 12:50", code: "0533-PHY-1203", name: "Optics", teacher: "IHS", type: "PHY" },
+                { time: "01:30 - 03:30", code: "0613-CSE-1206", name: "Computer Programming Lab (Group B)", teacher: "KA, MNT", type: "CSE" }
             ],
             2: [ // Tuesday
-                { time: "10:00 - 12:55", code: "0531-CHE-1208", name: "Chemistry Laboratory (Group B)", teacher: "MR, MSZ", type: "CHE" },
-                { time: "01:30 - 03:00", code: "0541-MAT-1209", name: "Vector Calculus & Complex Analysis", teacher: "MA", type: "MAT" }
+                { time: "10:20 - 12:30", code: "0531-CHE-1208", name: "Chemistry Laboratory (Group B)", teacher: "MR, MSZ", type: "CHE" },
+                { time: "01:30 - 02:30", code: "0541-MAT-1209", name: "Vector Calculus & Complex Analysis", teacher: "MA", type: "MAT" }
             ],
             3: [ // Wednesday
-                { time: "08:30 - 09:55", code: "0541-MAT-1209", name: "Vector Calculus & Complex Analysis", teacher: "MA", type: "MAT" },
-                { time: "10:00 - 11:25", code: "0531-CHE-1207", name: "Chemistry", teacher: "TUR", type: "CHE" },
-                { time: "11:30 - 12:55", code: "0533-PHY-1201", name: "Modern Physics", teacher: "SMM", type: "PHY" },
-                { time: "01:30 - 04:30", code: "0613-CSE-1206", name: "Computer Programming Lab (Group A)", teacher: "KA, MNT", type: "CSE" }
+                { time: "09:00 - 10:10", code: "0541-MAT-1209", name: "Vector Calculus & Complex Analysis", teacher: "MA", type: "MAT" },
+                { time: "10:20 - 11:30", code: "0531-CHE-1207", name: "Chemistry", teacher: "TUR", type: "CHE" },
+                { time: "11:40 - 12:50", code: "0533-PHY-1201", name: "Modern Physics", teacher: "SMM", type: "PHY" },
+                { time: "01:30 - 03:30", code: "0613-CSE-1206", name: "Computer Programming Lab (Group A)", teacher: "KA, MNT", type: "CSE" }
             ],
             4: [ // Thursday
-                { time: "08:30 - 09:55", code: "0613-CSE-1205", name: "Computer Programming", teacher: "MNT", type: "CSE" },
-                { time: "10:00 - 12:55", code: "0531-CHE-1208", name: "Chemistry Laboratory (Group A)", teacher: "MR, MSZ", type: "CHE" },
-                { time: "01:30 - 04:30", code: "0533-PHY-1204", name: "Physics Laboratory (Group B)", teacher: "SMM, MJR", type: "PHY" }
+                { time: "09:00 - 10:10", code: "0613-CSE-1205", name: "Computer Programming", teacher: "MNT", type: "CSE" },
+                { time: "10:20 - 12:30", code: "0531-CHE-1208", name: "Chemistry Laboratory (Group A)", teacher: "MR, MSZ", type: "CHE" },
+                { time: "01:30 - 03:30", code: "0533-PHY-1204", name: "Physics Laboratory (Group B)", teacher: "SMM, MJR", type: "PHY" }
             ]
         };
 
@@ -233,14 +248,6 @@
         }
 
         // --- TIME HELPER FUNCTIONS ---
-        function parseTime(timeStr) {
-            // Converts "10:00" to minutes from midnight (600)
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            return hours * 60 + minutes;
-        }
-
-        // Convert 12h format from schedule to 24h minutes for comparison
-        // The schedule uses 01:30 which implies 13:30. We need to handle that.
         function getMinutesFromTimeStr(timeStr) {
             let [h, m] = timeStr.split(':').map(Number);
             // Heuristic: If class is 01:xx, 02:xx, 03:xx, 04:xx it is PM
@@ -286,17 +293,14 @@
                 return;
             }
 
-            // Check if we are viewing "Today" to enable "Happening Now" logic
             const todayIndex = new Date().getDay();
             const isToday = (dayIndex === todayIndex);
 
             classes.forEach(cls => {
-                // Time Formatting
                 const times = cls.time.split('-');
                 const start = times[0].trim();
                 const end = times[1] ? times[1].trim() : '';
 
-                // Check active status
                 let activeClass = '';
                 let badge = '';
                 
