@@ -238,14 +238,14 @@
                     
                     {/* Eyepiece View (Telescope) */}
                     <div className="bg-black rounded-2xl shadow-lg border border-slate-800 overflow-hidden flex flex-col relative h-80 sm:h-96">
-                      <div className="absolute top-4 left-4 z-10 text-white text-xs font-mono opacity-60 bg-black/50 p-1 rounded">
+                      
+                      {/* FIXED: Top-left text overlay is now set to z-30 with higher opacity and a slight border so it's always readable */}
+                      <div className="absolute top-4 left-4 z-30 text-white text-xs font-mono opacity-90 bg-black/60 p-2 rounded border border-slate-700 shadow-sm">
                         FOV: ±{(fov/2).toFixed(2)}° | θ = {angle.toFixed(4)}°
                       </div>
                       
-                      {/* Viewport Mask */}
-                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
-                        <div className="w-[110%] h-[110%] bg-transparent" style={{boxShadow: 'inset 0 0 100px 90px rgba(0,0,0,1)', borderRadius: '50%'}}></div>
-                      </div>
+                      {/* FIXED: Replaced buggy box-shadow mask with a smooth radial-gradient vignette */}
+                      <div className="absolute inset-0 pointer-events-none z-10" style={{ background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.85) 100%)' }}></div>
 
                       {/* Crosshairs */}
                       <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-70 z-20">
@@ -254,7 +254,7 @@
                       </div>
 
                       {/* Render Spectral Lines */}
-                      <div className="relative w-full h-full">
+                      <div className="relative w-full h-full z-0">
                         {visibleLines.map((line, i) => {
                           const difference = line.expectedAngle - angle;
                           if (Math.abs(difference) <= fov / 2) {
@@ -262,7 +262,7 @@
                             return (
                               <div
                                 key={i}
-                                className="absolute top-0 bottom-0 w-1 sm:w-1.5 z-0"
+                                className="absolute top-0 bottom-0 w-1 sm:w-1.5"
                                 style={{
                                   left: `${leftPosition}%`,
                                   transform: 'translateX(-50%)',
@@ -272,7 +272,8 @@
                                   filter: 'blur(0.5px)'
                                 }}
                               >
-                                 <div className="absolute top-10 text-[11px] font-bold text-white whitespace-nowrap -translate-x-1/2 left-1/2 opacity-90 bg-black/60 px-1 rounded">
+                                 {/* FIXED: Text labels now have z-30 to stay firmly above the vignette shadow */}
+                                 <div className="absolute top-12 text-[11px] font-bold text-white whitespace-nowrap -translate-x-1/2 left-1/2 opacity-100 bg-black/70 px-1.5 py-0.5 rounded z-30 shadow-md">
                                     {line.name} <br/> <span className="text-[9px] font-normal">{line.wavelength} Å</span>
                                  </div>
                               </div>
