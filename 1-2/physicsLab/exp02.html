@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectrometer Lab Simulation</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for compiling JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Data derived EXACTLY from the provided lab manual
+        const EXPERIMENTAL_N = 5765.837;
+
+        const SOURCES = {
+          Sodium: {
+            name: "Sodium (Na)",
+            lines: [
+              { expWavelength: 5893.00, stdWavelength: 5893, color: '#FFD700', name: 'Yellow (Mean)' }
+            ],
+            centralColor: '#FFE57F'
+          },
+          Neon: {
+            name: "Neon (Ne)",
+            lines: [
+              { expWavelength: 5848.01, stdWavelength: 5893, color: '#FFD700', name: 'Yellow' }
+            ],
+            centralColor: '#FFA07A'
+          },
+          Helium: {
+            name: "Helium (He)",
+            lines: [
+              { expWavelength: 4557.43, stdWavelength: 4471, color: '#8A2BE2', name: 'Violet' },
+              { expWavelength: 4719.47, stdWavelength: 4713, color: '#0000FF', name: 'Blue' },
+              { expWavelength: 4865.33, stdWavelength: 4922, color: '#00CED1', name: 'Green-Blue' },
+              { expWavelength: 5072.77, stdWavelength: 5016, color: '#00FF00', name: 'Green' },
+              { expWavelength: 5918.40, stdWavelength: 5877, color: '#FFD700', name: 'Yellow' },
+              { expWavelength: 6684.83, stdWavelength: 6678, color: '#FF0000', name: 'Red' }
+            ],
+            centralColor: '#FFF0F5'
+          }
+        };
+
+        function SpectrometerSim() {
+          const [source, setSource] = useState('Helium');
+          const [gratingConstant, setGratingConstant] = useState(EXPERIMENTAL_N); 
+          const [angle, setAngle] = useState(0); 
+          const [fov] = useState(2.5); // 2.5 degrees field of view
+          const [useStandardValues, setUseStandardValues] = useState(false);
+
+          // Calculate where a line should appear based on grating equation
+          const calculateLinePosition = (wavelength, order) => {
+            const lambda_cm = wavelength * 1e-8;
+            const sinTheta = order * gratingConstant * lambda_cm;
+            if (Math.abs(sinTheta) > 1) return null; 
+            return Math.asin(sinTheta) * (180 / Math.PI);
+          };
+
+          // Calculate the wavelength currently at the crosshairs
+          const currentCrosshairLambda = () => {
+            if (angle === 0) return 0;
+            const sinTheta = Math.sin(Math.abs(angle) * (Math.PI / 180));
+            // Assuming n=1 for crosshair calculation display
+            const lambda_cm = sinTheta / gratingConstant;
+            return (lambda_cm * 1e8).toFixed(2);
+          };
+
+          const getVisibleLines = () => {
+            const lines = [];
+            const sourceData = SOURCES[source];
+            
+            lines.push({
+              expectedAngle: 0, color: sourceData.centralColor, name: 'Central Max', order: 0, intensity: 1.0
+            });
+
+            [-2, -1, 1, 2].forEach(order => {
+              sourceData.lines.forEach(line => {
+                const wavelengthToUse = useStandardValues ? line.stdWavelength : line.expWavelength;
+                const expectedAngle = calculateLinePosition(wavelengthToUse, order);
+                if (expectedAngle !== null) {
+                  lines.push({
+                    expectedAngle,
+                    color: line.color,
+                    name: `${line.name} (n=${order})`,
+                    order: order,
+                    intensity: Math.abs(order) === 1 ? 0.8 : 0.4,
+                    wavelength: wavelengthToUse
+                  });
+                }
+              });
+            });
+            return lines;
+          };
+
+          const adjustAngle = (delta) => {
+            setAngle(prev => {
+              let newAngle = prev + delta;
+              if (newAngle > 90) newAngle = 90;
+              if (newAngle < -90) newAngle = -90;
+              return Number(newAngle.toFixed(5));
+            });
+          };
+
+          const handleDirectAngleInput = (e) => {
+            let val = parseFloat(e.target.value);
+            if (!isNaN(val)) {
+              if (val > 90) val = 90;
+              if (val < -90) val = -90;
+              setAngle(val);
+            }
+          };
+
+          const visibleLines = getVisibleLines();
+
+          return (
+            <div className="min-h-screen p-4 md:p-8">
+              <div className="max-w-7xl mx-auto space-y-6">
+                
+                {/* Header */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex justify-between items-center flex-wrap gap-4">
+                  <div>
+                    <h1 className="text-2xl font-bold text-slate-900 mb-1">Spectrometer Simulation</h1>
+                    <p className="text-slate-600 text-sm">
+                      Based on Anik Das's Data. Grating eq: <code className="bg-slate-100 px-1 rounded text-indigo-700">sin(θ) = n·N·λ</code>
+                    </p>
+                  </div>
+                  <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100 flex items-center gap-3">
+                    <i className="fa-solid fa-crosshairs text-indigo-500 text-xl"></i>
+                    <div>
+                        <div className="text-xs text-indigo-800 uppercase font-semibold">Crosshair Wavelength (n=1)</div>
+                        <div className="text-xl font-mono text-indigo-900 font-bold">{currentCrosshairLambda()} Å</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  
+                  {/* Left Panel: Controls */}
+                  <div className="lg:col-span-5 space-y-6">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                      <h2 className="text-lg font-semibold flex items-center gap-2 mb-4 text-slate-800">
+                        <i className="fa-solid fa-sliders text-indigo-600"></i> Apparatus Controls
+                      </h2>
+                      
+                      {/* Source Selection */}
+                      <div className="mb-6">
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Light Source</label>
+                        <div className="flex bg-slate-100 p-1 rounded-lg">
+                          {Object.keys(SOURCES).map(src => (
+                            <button
+                              key={src}
+                              onClick={() => setAngle(0) || setSource(src)}
+                              className={`flex-1 py-2 px-2 text-sm font-bold rounded-md transition-colors ${
+                                source === src ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                              }`}
+                            >
+                              {SOURCES[src].name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Data Mode Toggle */}
+                      <div className="mb-6 flex items-center justify-between bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <span className="text-sm font-medium text-slate-700">Use Standard Wavelengths</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" className="sr-only peer" checked={useStandardValues} onChange={() => setUseStandardValues(!useStandardValues)} />
+                          <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                      </div>
+
+                      {/* Fine Angle Control */}
+                      <div className="mb-6">
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Telescope Angle (θ)</label>
+                        
+                        <div className="flex items-center gap-2 mb-4">
+                            <input 
+                              type="number" 
+                              step="0.00001"
+                              value={angle}
+                              onChange={handleDirectAngleInput}
+                              className="w-full text-center font-mono text-lg font-bold border-2 border-slate-200 rounded-lg py-2 text-indigo-700 focus:border-indigo-500 focus:outline-none"
+                            />
+                            <span className="text-xl font-bold text-slate-400">°</span>
+                        </div>
+
+                        {/* Micro adjustments */}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="space-y-2">
+                                <div className="text-xs text-center font-semibold text-slate-500">Rotate Left (-)</div>
+                                <button onClick={() => adjustAngle(-1)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">-1.0°</button>
+                                <button onClick={() => adjustAngle(-0.1)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">-0.1°</button>
+                                <button onClick={() => adjustAngle(-0.01)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">-0.01°</button>
+                                <button onClick={() => adjustAngle(-0.001)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">-0.001°</button>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="text-xs text-center font-semibold text-slate-500">Rotate Right (+)</div>
+                                <button onClick={() => adjustAngle(1)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">+1.0°</button>
+                                <button onClick={() => adjustAngle(0.1)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">+0.1°</button>
+                                <button onClick={() => adjustAngle(0.01)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">+0.01°</button>
+                                <button onClick={() => adjustAngle(0.001)} className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 text-sm font-mono">+0.001°</button>
+                            </div>
+                        </div>
+                        
+                        <input 
+                          type="range" min="-90" max="90" step="0.5"
+                          value={angle} onChange={(e) => setAngle(Number(e.target.value))}
+                          className="w-full accent-indigo-600 mb-2"
+                        />
+                      </div>
+
+                      <button 
+                        onClick={() => setAngle(0)}
+                        className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+                      >
+                        <i className="fa-solid fa-rotate-left"></i> Reset to Center (0°)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right Panel: Views */}
+                  <div className="lg:col-span-7 space-y-6">
+                    
+                    {/* Eyepiece View (Telescope) */}
+                    <div className="bg-black rounded-2xl shadow-lg border border-slate-800 overflow-hidden flex flex-col relative h-80 sm:h-96">
+                      <div className="absolute top-4 left-4 z-10 text-white text-xs font-mono opacity-60 bg-black/50 p-1 rounded">
+                        FOV: ±{(fov/2).toFixed(2)}° | θ = {angle.toFixed(4)}°
+                      </div>
+                      
+                      {/* Viewport Mask */}
+                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
+                        <div className="w-[110%] h-[110%] bg-transparent" style={{boxShadow: 'inset 0 0 100px 90px rgba(0,0,0,1)', borderRadius: '50%'}}></div>
+                      </div>
+
+                      {/* Crosshairs */}
+                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-70 z-20">
+                        <div className="w-full h-[1px] bg-green-500/50"></div>
+                        <div className="absolute h-full w-[1px] bg-green-500 shadow-[0_0_5px_#22c55e]"></div>
+                      </div>
+
+                      {/* Render Spectral Lines */}
+                      <div className="relative w-full h-full">
+                        {visibleLines.map((line, i) => {
+                          const difference = line.expectedAngle - angle;
+                          if (Math.abs(difference) <= fov / 2) {
+                            const leftPosition = 50 + ((difference) / (fov / 2)) * 50;
+                            return (
+                              <div
+                                key={i}
+                                className="absolute top-0 bottom-0 w-1 sm:w-1.5 z-0"
+                                style={{
+                                  left: `${leftPosition}%`,
+                                  transform: 'translateX(-50%)',
+                                  backgroundColor: line.color,
+                                  boxShadow: `0 0 10px 2px ${line.color}`,
+                                  opacity: line.intensity,
+                                  filter: 'blur(0.5px)'
+                                }}
+                              >
+                                 <div className="absolute top-10 text-[11px] font-bold text-white whitespace-nowrap -translate-x-1/2 left-1/2 opacity-90 bg-black/60 px-1 rounded">
+                                    {line.name} <br/> <span className="text-[9px] font-normal">{line.wavelength} Å</span>
+                                 </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Top-down Diagram */}
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center justify-center h-48 relative overflow-hidden">
+                      <h3 className="absolute top-4 left-6 font-semibold text-slate-700 text-sm"><i className="fa-solid fa-eye text-slate-400"></i> Top-Down View</h3>
+                      
+                      <div className="relative w-32 h-32 flex items-center justify-center mt-4">
+                        {/* Spectrometer Table */}
+                        <div className="absolute w-12 h-12 rounded-full border-2 border-slate-300 bg-slate-100 z-10 flex items-center justify-center shadow-inner">
+                           <div className="w-1 h-6 bg-indigo-500 rounded-full"></div>
+                        </div>
+                        
+                        {/* Collimator */}
+                        <div className="absolute right-1/2 w-40 h-3 bg-slate-300 flex items-center justify-start rounded-l">
+                          <div className="w-5 h-5 rounded-full -ml-2.5 z-20" style={{backgroundColor: source === 'Sodium' ? '#FFD700' : source === 'Neon' ? '#FFA07A' : '#FF69B4', boxShadow: `0 0 10px ${source === 'Sodium' ? '#FFD700' : '#FF69B4'}`}}></div>
+                        </div>
+
+                        {/* Telescope */}
+                        <div 
+                          className="absolute left-1/2 w-40 h-3 origin-left transition-transform duration-75 ease-out z-20"
+                          style={{ transform: `rotate(${-angle}deg)` }}
+                        >
+                           <div className="w-full h-full bg-slate-700 rounded-r"></div>
+                           <div className="absolute left-0 top-1/2 w-full h-[1px] bg-yellow-400/50 -translate-y-1/2 border-dashed border-b border-yellow-500"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SpectrometerSim />);
+    </script>
+</body>
+</html>
