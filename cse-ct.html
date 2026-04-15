@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Programming Exam Prep Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .code-block {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+        .trap-card-content {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .trap-card-content.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans antialiased selection:bg-amber-200 selection:text-stone-900">
+
+    <!-- Chosen Palette: Warm Neutrals (Stone, Amber, Teal) -->
+    <!-- Application Structure Plan: A dashboard approach with four functional zones: 1) Readiness Tracker (Chart.js) to visualize syllabus progress. 2) Exam Traps (Accordions) to actively engage with common pitfalls. 3) Debugging Checklist (Interactive List) to simulate the exam bug-hunting process. 4) Practice Arena (Dynamic Filtered View) to apply knowledge. This logical flow moves the user from high-level overview to specific concept review, and finally to active problem-solving, maximizing retention. -->
+    <!-- Visualization & Content Choices: Readiness -> Chart.js Bar Chart -> User updates confidence levels -> Visualizes syllabus strengths/weaknesses. Exam Traps -> HTML Accordions -> Click to reveal details -> Encourages active recall before reading. Debugging -> Interactive Checklist -> Click to strikethrough -> Builds a procedural memory for exam debugging. Practice Problems -> Filterable Cards -> Click to reveal solution -> Tests applied knowledge. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+        
+        <header class="text-center border-b border-stone-200 pb-8">
+            <h1 class="text-4xl font-extrabold text-stone-900 tracking-tight">EEE-57 C Programming</h1>
+            <p class="mt-4 text-xl text-stone-600 max-w-2xl mx-auto">Interactive Exam Preparation Dashboard. Master the syntax, hunt the bugs, and bulletproof your code.</p>
+        </header>
+
+        <section id="readiness-section" class="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 md:p-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <span class="text-2xl">📊</span> Syllabus Readiness Tracker
+                </h2>
+                <p class="mt-2 text-stone-600">
+                    This section helps you visualize your confidence across the core syllabus topics (Lectures 2-7). Use the buttons below the chart to adjust your self-assessed readiness level for each topic. Focusing on your weakest areas is critical for maximizing your exam score.
+                </p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="readinessChart"></canvas>
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4" id="topic-controls">
+            </div>
+        </section>
+
+        <section id="traps-section" class="space-y-6">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <span class="text-2xl">⚠️</span> The Exam Trap Zone
+                </h2>
+                <p class="mt-2 text-stone-600">
+                    Based on previous incourse exams, these are the most common logical and syntactic traps designed to test your deep understanding of C's execution rules. Click on each trap to reveal the underlying mechanic and an example.
+                </p>
+            </div>
+            <div id="traps-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+        </section>
+
+        <section id="debugging-section" class="bg-amber-50 rounded-2xl shadow-sm border border-amber-100 p-6 md:p-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-amber-900 flex items-center gap-2">
+                    <span class="text-2xl">🐛</span> Mental Debugging Checklist
+                </h2>
+                <p class="mt-2 text-amber-800">
+                    "Find and Fix the Error" questions require a systematic approach. Use this interactive checklist to build a mental routine. Click an item to mark it as checked while you review practice code.
+                </p>
+            </div>
+            <ul id="debugging-list" class="space-y-3">
+            </ul>
+        </section>
+
+        <section id="practice-section" class="bg-white rounded-2xl shadow-sm border border-stone-100 p-6 md:p-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <span class="text-2xl">🎯</span> Practice Arena
+                </h2>
+                <p class="mt-2 text-stone-600">
+                    Apply your knowledge to actual EEE-style problems. Select a category, try to solve the problem mentally or on paper, and then reveal the logic to check your work.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 mb-6" id="practice-filters">
+            </div>
+
+            <div id="practice-content" class="bg-stone-50 rounded-xl p-6 border border-stone-200 min-h-[300px]">
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const syllabusTopics = [
+            'Fundamentals', 
+            'Data Types', 
+            'Operators', 
+            'Conditional Logic', 
+            'Loops', 
+            'Functions'
+        ];
+        
+        let topicReadiness = [70, 85, 60, 90, 75, 50];
+
+        const ctx = document.getElementById('readinessChart').getContext('2d');
+        let readinessChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: syllabusTopics,
+                datasets: [{
+                    label: 'Confidence Level (%)',
+                    data: topicReadiness,
+                    backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                    borderColor: 'rgba(180, 83, 9, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + '% Readiness';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const controlsContainer = document.getElementById('topic-controls');
+        syllabusTopics.forEach((topic, index) => {
+            const btnGroup = document.createElement('div');
+            btnGroup.className = 'flex flex-col items-center p-3 bg-stone-50 rounded-lg border border-stone-200';
+            
+            const label = document.createElement('span');
+            label.className = 'text-xs font-semibold text-stone-600 uppercase tracking-wider mb-2 text-center h-8 flex items-center';
+            label.innerText = topic;
+
+            const btnFlex = document.createElement('div');
+            btnFlex.className = 'flex gap-2';
+
+            const minusBtn = document.createElement('button');
+            minusBtn.className = 'w-8 h-8 flex items-center justify-center bg-white border border-stone-300 rounded text-stone-600 hover:bg-stone-100 transition-colors font-bold';
+            minusBtn.innerText = '-';
+            minusBtn.onclick = () => updateChartData(index, -10);
+
+            const plusBtn = document.createElement('button');
+            plusBtn.className = 'w-8 h-8 flex items-center justify-center bg-white border border-stone-300 rounded text-stone-600 hover:bg-stone-100 transition-colors font-bold';
+            plusBtn.innerText = '+';
+            plusBtn.onclick = () => updateChartData(index, 10);
+
+            btnFlex.appendChild(minusBtn);
+            btnFlex.appendChild(plusBtn);
+            btnGroup.appendChild(label);
+            btnGroup.appendChild(btnFlex);
+            controlsContainer.appendChild(btnGroup);
+        });
+
+        function updateChartData(index, change) {
+            let newValue = topicReadiness[index] + change;
+            if (newValue > 100) newValue = 100;
+            if (newValue < 0) newValue = 0;
+            topicReadiness[index] = newValue;
+            readinessChart.update();
+        }
+
+        const trapsData = [
+            {
+                title: "Short-Circuit Evaluation",
+                desc: "In expressions using && (AND) or || (OR), C evaluates left-to-right and stops as soon as the result is certain.",
+                code: "int a = 5, b = 0;\nint c = (a > 3) || (++b);\n// b remains 0! Left side is true, so ++b is NEVER executed.",
+                icon: "⚡"
+            },
+            {
+                title: "Switch Fall-Through",
+                desc: "If a case lacks a break statement, execution continues into the next case block regardless of the case condition.",
+                code: "int k = 1, m = 0;\nswitch(k) {\n  case 1: m += 2; // Executes\n  case 2: m += 3; // Executes too!\n}",
+                icon: "🕳️"
+            },
+            {
+                title: "Integer Division",
+                desc: "Dividing two integers always results in an integer, discarding any decimal remainder. It does not round.",
+                code: "float area = (1/2) * base * height;\n// (1/2) evaluates to 0, making the whole area 0.0!\n// Fix: use (1.0/2.0)",
+                icon: "➗"
+            },
+            {
+                title: "Pass by Value",
+                desc: "Modifying a standard variable inside a function only modifies a local copy, leaving the original variable in main() unchanged.",
+                code: "void add(int x) { x = x + 5; }\nint main() {\n  int score = 10; add(score);\n  // score is still 10!\n}",
+                icon: "📄"
+            }
+        ];
+
+        const trapsContainer = document.getElementById('traps-container');
+        trapsData.forEach((trap, index) => {
+            const trapEl = document.createElement('div');
+            trapEl.className = 'bg-white rounded-xl border border-stone-200 overflow-hidden shadow-sm';
+            
+            const headerBtn = document.createElement('button');
+            headerBtn.className = 'w-full px-6 py-4 flex items-center justify-between bg-white hover:bg-stone-50 transition-colors text-left';
+            headerBtn.innerHTML = `<span class="font-bold text-stone-800 text-lg"><span class="mr-2">${trap.icon}</span>${trap.title}</span><span class="text-stone-400 text-xl font-bold">+</span>`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'trap-card-content px-6 bg-stone-50 border-t border-stone-100';
+            contentDiv.innerHTML = `
+                <p class="py-4 text-stone-700">${trap.desc}</p>
+                <div class="bg-stone-900 text-green-400 p-4 rounded-lg mb-4 code-block text-sm overflow-x-auto whitespace-pre">${trap.code}</div>
+            `;
+
+            headerBtn.onclick = () => {
+                const isOpen = contentDiv.classList.contains('open');
+                document.querySelectorAll('.trap-card-content').forEach(el => el.classList.remove('open'));
+                document.querySelectorAll('#traps-container button > span:last-child').forEach(el => el.innerText = '+');
+                
+                if (!isOpen) {
+                    contentDiv.classList.add('open');
+                    headerBtn.querySelector('span:last-child').innerText = '-';
+                }
+            };
+
+            trapEl.appendChild(headerBtn);
+            trapEl.appendChild(contentDiv);
+            trapsContainer.appendChild(trapEl);
+        });
+
+        const checklistItems = [
+            "Check #include statements (e.g., <math.h> for sqrt/pow)",
+            "Verify scanf has '&' before standard variables",
+            "Ensure every statement ends with a semicolon (;)",
+            "Match opening { with closing } brackets",
+            "Verify format specifiers match variable types (%f, %d, %lf)",
+            "Check for case sensitivity mismatches (Area vs area)",
+            "Look for unintentional assignment (=) inside if conditions (==)"
+        ];
+
+        const debuggingList = document.getElementById('debugging-list');
+        checklistItems.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center gap-3 p-3 bg-white rounded-lg border border-amber-100 cursor-pointer hover:bg-amber-100 transition-colors text-amber-900 font-medium select-none';
+            li.innerHTML = `<span class="text-xl w-6 h-6 flex items-center justify-center border-2 border-amber-300 rounded text-transparent transition-colors">✔</span> ${item}`;
+            
+            li.onclick = () => {
+                const checkIcon = li.querySelector('span');
+                if (li.classList.contains('line-through')) {
+                    li.classList.remove('line-through', 'text-amber-400', 'bg-amber-50');
+                    checkIcon.classList.remove('text-amber-600', 'border-amber-600');
+                    checkIcon.classList.add('text-transparent', 'border-amber-300');
+                } else {
+                    li.classList.add('line-through', 'text-amber-400', 'bg-amber-50');
+                    checkIcon.classList.add('text-amber-600', 'border-amber-600');
+                    checkIcon.classList.remove('text-transparent', 'border-amber-300');
+                }
+            };
+            debuggingList.appendChild(li);
+        });
+
+        const practiceData = [
+            {
+                category: "Output Tracing",
+                question: "What is the output of the following code snippet?",
+                code: "int x = 15, y = 20, z = 10;\nint max = (x > y) ? ((x > z) ? x : z) : ((y > z) ? y : z);\nprintf(\"%d\", max);",
+                answer: "Output: 20",
+                logic: "This is a nested ternary operator finding the maximum of three numbers. Since x > y (15 > 20) is false, it evaluates the second part: ((y > z) ? y : z). Since 20 > 10 is true, it returns y (20)."
+            },
+            {
+                category: "Bug Fixing",
+                question: "Find and fix the error in this area calculation.",
+                code: "int base = 5, height = 10;\nfloat Area;\narea = (1/2) * base * height;\nprintf(\"Area is %d\", Area);",
+                answer: "Three major bugs fixed.",
+                logic: "1) Case sensitivity: 'Area' declared, but 'area' used. 2) Integer division: (1/2) becomes 0. Use (1.0/2.0). 3) Format specifier: Used %d for a float in printf, must use %f."
+            },
+            {
+                category: "Loops & Logic",
+                question: "What is the value of 'c' after execution?",
+                code: "int a = 5, b = 0, c;\nc = (a < 3) && (++b);\nprintf(\"%d\", c);",
+                answer: "Output: 0",
+                logic: "Short-circuit AND. 'a < 3' (5 < 3) is FALSE. Therefore, the right side (++b) is ignored completely. The boolean result of FALSE && (anything) is 0."
+            }
+        ];
+
+        const filtersContainer = document.getElementById('practice-filters');
+        const practiceContent = document.getElementById('practice-content');
+
+        function renderPracticeCategory(index) {
+            document.querySelectorAll('#practice-filters button').forEach((btn, i) => {
+                if (i === index) {
+                    btn.classList.add('bg-teal-700', 'text-white', 'border-teal-700');
+                    btn.classList.remove('bg-white', 'text-stone-600');
+                } else {
+                    btn.classList.remove('bg-teal-700', 'text-white', 'border-teal-700');
+                    btn.classList.add('bg-white', 'text-stone-600');
+                }
+            });
+
+            const data = practiceData[index];
+            practiceContent.innerHTML = `
+                <h3 class="text-xl font-bold text-stone-800 mb-2">${data.category}</h3>
+                <p class="text-stone-700 mb-4">${data.question}</p>
+                <div class="bg-stone-900 text-stone-100 p-4 rounded-lg mb-6 code-block text-sm overflow-x-auto whitespace-pre">${data.code}</div>
+                <button id="reveal-btn" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-6 rounded transition-colors mb-4">Reveal Solution & Logic</button>
+                <div id="solution-container" class="hidden bg-teal-50 border border-teal-200 rounded-lg p-5">
+                    <p class="font-bold text-teal-900 mb-2">${data.answer}</p>
+                    <p class="text-teal-800 text-sm leading-relaxed">${data.logic}</p>
+                </div>
+            `;
+
+            document.getElementById('reveal-btn').onclick = function() {
+                document.getElementById('solution-container').classList.remove('hidden');
+                this.classList.add('hidden');
+            };
+        }
+
+        practiceData.forEach((data, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'px-4 py-2 bg-white border border-stone-300 text-stone-600 rounded-full text-sm font-semibold hover:bg-stone-100 transition-colors';
+            btn.innerText = data.category;
+            btn.onclick = () => renderPracticeCategory(index);
+            filtersContainer.appendChild(btn);
+        });
+
+        renderPracticeCategory(0);
+
+    </script>
+</body>
+</html>
