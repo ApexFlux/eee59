@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EEE · DU — Term-Final Routine, 1st Year 2nd Semester</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#0d2b21;
+    --board-deep:#081b15;
+    --copper:#c98a4b;
+    --copper-bright:#e3a765;
+    --gold:#d9b25c;
+    --silk:#eef2e6;
+    --silk-dim:#a9b9ac;
+    --led-green:#5be08a;
+    --led-amber:#ffb648;
+    --mask-line:rgba(238,242,230,0.08);
+    --danger:#ff6b5e;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 15% 0%, rgba(217,178,92,0.06), transparent 45%),
+      radial-gradient(ellipse at 85% 100%, rgba(91,224,138,0.05), transparent 50%),
+      var(--board);
+    background-color:var(--board);
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgba(217,178,92,0.06), transparent 45%),
+      radial-gradient(ellipse at 85% 100%, rgba(91,224,138,0.05), transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, var(--mask-line) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, var(--mask-line) 40px);
+    color:var(--silk);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  /* ---------- Layout shell ---------- */
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:56px 24px 80px;
+    position:relative;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    text-align:center;
+    margin-bottom:54px;
+  }
+
+  .chip-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--copper-bright);
+    border:1px solid rgba(201,138,75,0.4);
+    padding:6px 14px;
+    border-radius:3px;
+    background:rgba(201,138,75,0.06);
+  }
+
+  .chip-tag .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--led-green);
+    box-shadow:0 0 6px 1px var(--led-green);
+    animation:blink 2.4s ease-in-out infinite;
+  }
+
+  @keyframes blink{
+    0%,100%{opacity:1;}
+    50%{opacity:0.35;}
+  }
+
+  h1{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:800;
+    font-size:clamp(28px, 5vw, 44px);
+    letter-spacing:-0.01em;
+    margin:20px 0 8px;
+    line-height:1.15;
+    color:var(--silk);
+  }
+
+  h1 span{color:var(--gold);}
+
+  .subtitle{
+    font-size:15px;
+    color:var(--silk-dim);
+    letter-spacing:0.02em;
+    margin:0 0 26px;
+  }
+
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+  }
+
+  .meta-pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--silk-dim);
+    border:1px solid var(--mask-line);
+    padding:7px 13px;
+    border-radius:20px;
+    background:rgba(0,0,0,0.15);
+  }
+  .meta-pill b{color:var(--silk); font-weight:600;}
+
+  /* ---------- Countdown readout ---------- */
+  .readout{
+    margin:40px auto 0;
+    max-width:520px;
+    border:1px solid rgba(217,178,92,0.35);
+    border-radius:8px;
+    background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.1));
+    padding:22px 24px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .readout::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(115deg, rgba(217,178,92,0.035) 0px, rgba(217,178,92,0.035) 1px, transparent 1px, transparent 8px);
+    pointer-events:none;
+  }
+  .readout-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--silk-dim);
+    margin-bottom:10px;
+  }
+  #readout-value{
+    font-family:'JetBrains Mono', monospace;
+    font-size:clamp(22px, 4vw, 30px);
+    font-weight:700;
+    color:var(--led-amber);
+    text-shadow:0 0 18px rgba(255,182,72,0.35);
+  }
+  #readout-sub{
+    margin-top:8px;
+    font-size:12.5px;
+    color:var(--silk-dim);
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  /* ---------- Circuit / timeline ---------- */
+  .circuit{
+    position:relative;
+    margin-top:64px;
+    padding-left:46px;
+  }
+
+  .trace{
+    position:absolute;
+    left:14px;
+    top:6px;
+    bottom:6px;
+    width:2px;
+    background:linear-gradient(180deg, var(--copper) 0%, rgba(201,138,75,0.25) 100%);
+  }
+  .trace::after{
+    content:"";
+    position:absolute;
+    left:-3px; top:0;
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--led-green);
+    box-shadow:0 0 10px 2px var(--led-green);
+    animation:pulseDown 5s linear infinite;
+  }
+  @keyframes pulseDown{
+    0%{top:0; opacity:0;}
+    5%{opacity:1;}
+    95%{opacity:1;}
+    100%{top:100%; opacity:0;}
+  }
+
+  .node{
+    position:relative;
+    margin-bottom:34px;
+  }
+  .node:last-child{margin-bottom:0;}
+
+  .node-marker{
+    position:absolute;
+    left:-46px;
+    top:22px;
+    width:32px; height:32px;
+    border-radius:50%;
+    background:var(--board-deep);
+    border:2px solid var(--copper);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    font-weight:700;
+    color:var(--copper-bright);
+    z-index:2;
+  }
+  .node.is-next .node-marker{
+    border-color:var(--led-amber);
+    color:var(--led-amber);
+    box-shadow:0 0 0 4px rgba(255,182,72,0.12), 0 0 14px rgba(255,182,72,0.4);
+  }
+  .node.is-done .node-marker{
+    border-color:var(--led-green);
+    color:var(--led-green);
+  }
+
+  .card{
+    border:1px solid var(--mask-line);
+    background:linear-gradient(155deg, rgba(255,255,255,0.025), rgba(0,0,0,0.15));
+    border-radius:10px;
+    padding:20px 22px;
+    transition:border-color 0.25s ease, transform 0.25s ease;
+  }
+  .card:hover{
+    border-color:rgba(217,178,92,0.5);
+    transform:translateY(-2px);
+  }
+  .node.is-next .card{
+    border-color:rgba(255,182,72,0.55);
+    background:linear-gradient(155deg, rgba(255,182,72,0.06), rgba(0,0,0,0.15));
+  }
+
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:12px;
+  }
+
+  .date-block{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .date-num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:22px;
+    font-weight:700;
+    color:var(--silk);
+  }
+  .date-day{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--silk-dim);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+  }
+
+  .status-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    padding:4px 10px;
+    border-radius:20px;
+    border:1px solid var(--mask-line);
+    color:var(--silk-dim);
+    white-space:nowrap;
+  }
+  .node.is-next .status-tag{
+    color:var(--led-amber);
+    border-color:rgba(255,182,72,0.5);
+    background:rgba(255,182,72,0.08);
+  }
+  .node.is-done .status-tag{
+    color:var(--led-green);
+    border-color:rgba(91,224,138,0.4);
+    background:rgba(91,224,138,0.06);
+  }
+
+  .course-title{
+    font-size:17px;
+    font-weight:700;
+    color:var(--silk);
+    margin:0 0 4px;
+  }
+  .course-code{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--copper-bright);
+    letter-spacing:0.02em;
+  }
+
+  .card-foot{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed var(--mask-line);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--silk-dim);
+  }
+  .card-foot b{color:var(--silk-dim); font-weight:500;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:64px;
+    text-align:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--silk-dim);
+    letter-spacing:0.03em;
+    line-height:1.9;
+  }
+  footer .rule{
+    width:80px;
+    height:1px;
+    background:var(--mask-line);
+    margin:0 auto 20px;
+  }
+
+  @media (max-width:560px){
+    .circuit{padding-left:38px;}
+    .node-marker{left:-38px; width:28px; height:28px; font-size:9px;}
+    .card{padding:16px 16px;}
+    .date-num{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <span class="chip-tag"><span class="dot"></span>SCHEDULE ARMED</span>
+    <h1>Term-Final <span>Examination</span> Routine</h1>
+    <p class="subtitle">Department of Electrical &amp; Electronic Engineering, University of Dhaka</p>
+    <div class="meta-row">
+      <span class="meta-pill">Session: <b>1st Year, 2nd Semester</b></span>
+      <span class="meta-pill">Exam time: <b>1:30 PM – 4:30 PM</b></span>
+      <span class="meta-pill">Courses: <b>05</b></span>
+    </div>
+
+    <div class="readout">
+      <div class="readout-label">Countdown to next paper</div>
+      <div id="readout-value" class="mono">—</div>
+      <div id="readout-sub" class="mono">calculating…</div>
+    </div>
+  </header>
+
+  <div class="circuit">
+    <div class="trace"></div>
+    <div id="node-list"></div>
+  </div>
+
+  <footer>
+    <div class="rule"></div>
+    All timings as printed on the official question paper — 1:30 PM to 4:30 PM.<br>
+    Verify venue &amp; seat plan against the department notice board before each paper.<br>
+    Generated for personal reference · EEE, DU
+  </footer>
+
+</div>
+
+<script>
+  const exams = [
+    { date: "2026-07-28", day: "Tuesday",  code: "0613-CSE-1205", title: "Computer Programming",                    designator:"U1" },
+    { date: "2026-08-02", day: "Sunday",   code: "0533-PHY-1201", title: "Modern Physics",                          designator:"U2" },
+    { date: "2026-08-06", day: "Thursday", code: "0533-PHY-1203", title: "Optics",                                  designator:"U3" },
+    { date: "2026-08-10", day: "Monday",   code: "0531-CHE-1207", title: "Chemistry",                               designator:"U4" },
+    { date: "2026-08-16", day: "Sunday",   code: "0541-MAT-1209", title: "Vector Calculus and Complex Analysis",    designator:"U5" },
+  ];
+
+  const EXAM_START_HOUR = 13.5; // 1:30 PM
+  const EXAM_END_HOUR = 16.5;   // 4:30 PM
+
+  function examStart(dateStr){
+    const d = new Date(dateStr + "T13:30:00+06:00");
+    return d;
+  }
+  function examEnd(dateStr){
+    const d = new Date(dateStr + "T16:30:00+06:00");
+    return d;
+  }
+
+  const now = new Date();
+
+  const listEl = document.getElementById('node-list');
+  let nextExam = null;
+
+  exams.forEach((ex, i) => {
+    const start = examStart(ex.date);
+    const end = examEnd(ex.date);
+    const isDone = now > end;
+    const isNext = !isDone && !nextExam;
+    if (isNext) nextExam = { ...ex, start, end };
+
+    const [y, m, d] = ex.date.split("-");
+    const monthNames = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+    const dateLabel = `${d} ${monthNames[parseInt(m,10)-1]} ${y}`;
+
+    let statusLabel = "Standby";
+    if (isDone) statusLabel = "Completed";
+    else if (isNext) statusLabel = "Next Up";
+
+    const daysAway = Math.ceil((start - now) / (1000*60*60*24));
+    const daysText = isDone ? "sat" : (daysAway <= 0 ? "today" : `T-minus ${daysAway}d`);
+
+    const node = document.createElement('div');
+    node.className = `node ${isDone ? 'is-done' : ''} ${isNext ? 'is-next' : ''}`;
+    node.innerHTML = `
+      <div class="node-marker">${ex.designator}</div>
+      <div class="card">
+        <div class="card-top">
+          <div class="date-block">
+            <span class="date-num mono">${dateLabel}</span>
+            <span class="date-day mono">${ex.day}</span>
+          </div>
+          <span class="status-tag">${statusLabel}</span>
+        </div>
+        <div class="course-title">${ex.title}</div>
+        <div class="course-code">${ex.code}</div>
+        <div class="card-foot">
+          <span><b>Time:</b> 1:30 PM – 4:30 PM</span>
+          <span>${daysText}</span>
+        </div>
+      </div>
+    `;
+    listEl.appendChild(node);
+  });
+
+  const readoutValue = document.getElementById('readout-value');
+  const readoutSub = document.getElementById('readout-sub');
+
+  function pad(n){ return n.toString().padStart(2,'0'); }
+
+  function tick(){
+    const t = new Date();
+    if (!nextExam){
+      readoutValue.textContent = "ALL PAPERS CLEARED";
+      readoutSub.textContent = "session complete — well done";
+      return;
+    }
+    let diff = nextExam.start - t;
+    if (diff <= 0 && t < nextExam.end){
+      readoutValue.textContent = "IN PROGRESS";
+      readoutSub.textContent = `${nextExam.title} · ends 4:30 PM`;
+      return;
+    }
+    if (diff <= 0){
+      readoutValue.textContent = "PAPER CLOSED";
+      readoutSub.textContent = "refresh to load next paper";
+      return;
+    }
+    const days = Math.floor(diff / (1000*60*60*24));
+    diff -= days * (1000*60*60*24);
+    const hours = Math.floor(diff / (1000*60*60));
+    diff -= hours * (1000*60*60);
+    const mins = Math.floor(diff / (1000*60));
+    diff -= mins * (1000*60);
+    const secs = Math.floor(diff / 1000);
+
+    readoutValue.textContent = `${pad(days)}d ${pad(hours)}h ${pad(mins)}m ${pad(secs)}s`;
+    readoutSub.textContent = `until ${nextExam.title} · ${nextExam.code}`;
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
