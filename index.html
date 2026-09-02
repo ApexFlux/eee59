@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EEE Routine — DU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #0a0c10;
+    --surface: #15181d;
+    --surface-2: #1c2027;
+    --line: #262b33;
+    --text: #eef0f3;
+    --text-dim: #8b929c;
+    --text-faint: #565d67;
+
+    --eee: #5b8def;
+    --eee-bg: rgba(91,141,239,0.13);
+    --mat: #e7a94c;
+    --mat-bg: rgba(231,169,76,0.13);
+    --lab: #45c6a4;
+    --lab-bg: rgba(69,198,164,0.13);
+    --muted: #6b7280;
+    --muted-bg: rgba(107,114,128,0.10);
+
+    --radius-lg: 26px;
+    --radius-md: 18px;
+    --radius-pill: 999px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing: antialiased;
+    display:flex;
+    justify-content:center;
+  }
+
+  .app{
+    width:100%;
+    max-width: 480px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding-bottom: 48px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .header{
+    position:relative;
+    padding: 28px 22px 18px;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  .header::before{
+    content:"";
+    position:absolute;
+    inset:-40% -20% auto -20%;
+    height: 260px;
+    background: radial-gradient(closest-side, var(--blob-color, #5b8def) 0%, transparent 72%);
+    opacity: 0.16;
+    z-index:-1;
+    transition: background 0.5s ease;
+    filter: blur(2px);
+  }
+
+  .header-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom: 22px;
+  }
+  .eyebrow-line{
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-weight:500;
+    line-height:1.4;
+  }
+  .eyebrow-line strong{ color: var(--text); font-weight:600; }
+  .clock{
+    font-size:0.8rem;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+    padding-top:2px;
+  }
+
+  .day-title{
+    font-family:'Onest', sans-serif;
+    font-weight:700;
+    font-size: 2.3rem;
+    line-height:1.05;
+    margin:0;
+    letter-spacing: -0.01em;
+  }
+  .day-sub{
+    margin-top:6px;
+    font-size:0.92rem;
+    color: var(--text-dim);
+  }
+
+  /* ---------- DAY NAV ---------- */
+  .day-nav{
+    display:flex;
+    gap:8px;
+    padding: 4px 22px 18px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .day-nav::-webkit-scrollbar{display:none;}
+  .day-btn{
+    flex:0 0 auto;
+    background: var(--surface);
+    border:1px solid var(--line);
+    color: var(--text-dim);
+    padding: 9px 18px;
+    border-radius: var(--radius-pill);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.88rem;
+    cursor:pointer;
+    transition: all 0.22s ease;
+  }
+  .day-btn.active{
+    background: var(--text);
+    color: #0a0c10;
+    border-color: var(--text);
+  }
+
+  /* ---------- GROUP TOGGLE ---------- */
+  .group-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin: 0 22px 22px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border:1px solid var(--line);
+    border-radius: var(--radius-md);
+  }
+  .group-row .label{
+    font-size:0.82rem;
+    color: var(--text-dim);
+    font-weight:500;
+  }
+  .group-row .label b{ color: var(--text); font-weight:600; }
+  .segmented{
+    display:flex;
+    background: var(--surface-2);
+    border-radius: var(--radius-pill);
+    padding:3px;
+    gap:2px;
+  }
+  .segmented button{
+    border:none;
+    background:transparent;
+    color: var(--text-dim);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.8rem;
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    cursor:pointer;
+    transition: all 0.2s ease;
+  }
+  .segmented button.active{
+    background: var(--lab);
+    color: #06231b;
+  }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding: 0 22px;
+  }
+
+  .slot{
+    position:relative;
+    display:flex;
+    gap:14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 16px 16px 16px 14px;
+  }
+  .slot.live{
+    border-color: var(--card-accent, var(--eee));
+    box-shadow: 0 0 0 1px var(--card-accent, var(--eee)), 0 6px 24px -8px var(--card-accent, var(--eee));
+  }
+
+  .slot-bar{
+    width:4px;
+    border-radius: 4px;
+    background: var(--card-accent, var(--eee));
+    flex:0 0 auto;
+  }
+
+  .slot-time{
+    flex:0 0 62px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:2px;
+  }
+  .t-start{ font-family:'Onest',sans-serif; font-weight:700; font-size:1.02rem; }
+  .t-end{ font-size:0.76rem; color: var(--text-faint); }
+
+  .slot-body{ flex:1; min-width:0; }
+  .slot-top-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+  }
+  .slot-code{
+    font-size:0.72rem;
+    color: var(--text-faint);
+    font-weight:500;
+    letter-spacing:0.01em;
+  }
+  .slot-name{
+    font-family:'Onest',sans-serif;
+    font-weight:600;
+    font-size:1.02rem;
+    line-height:1.28;
+    margin: 3px 0 8px;
+    color: var(--text);
+  }
+  .slot-meta{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .meta-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:0.82rem;
+    color: var(--text-dim);
+  }
+  .meta-row svg{ flex:0 0 auto; opacity:0.75; }
+
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    font-size:0.72rem;
+    font-weight:600;
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    background: var(--chip-bg, var(--eee-bg));
+    color: var(--chip-color, var(--eee));
+    white-space:nowrap;
+  }
+
+  .live-tag{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:0.7rem;
+    font-weight:700;
+    color: var(--card-accent, var(--eee));
+    flex:0 0 auto;
+  }
+  .live-dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--card-accent, var(--eee));
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 var(--card-accent, rgba(91,141,239,0.5)); }
+    70%{ box-shadow:0 0 0 7px rgba(0,0,0,0); }
+    100%{ box-shadow:0 0 0 0 rgba(0,0,0,0); }
+  }
+
+  /* ---------- FREE / NO-LAB CARD ---------- */
+  .slot.quiet{
+    background: transparent;
+    border: 1.5px dashed var(--line);
+  }
+  .slot.quiet .slot-bar{ background: var(--text-faint); opacity:0.4; }
+  .slot.quiet .slot-name{ color: var(--text-dim); font-weight:500; font-size:0.92rem; }
+  .slot.quiet .t-start{ color: var(--text-dim); }
+
+  /* ---------- EMPTY DAY ---------- */
+  .empty-day{
+    margin: 12px 22px 0;
+    padding: 40px 20px;
+    text-align:center;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-lg);
+    color: var(--text-dim);
+  }
+  .empty-day .big{ font-family:'Onest',sans-serif; font-weight:600; font-size:1.1rem; color:var(--text); margin-bottom:6px; }
+
+  /* ---------- FOOTER ---------- */
+  .footer{
+    margin-top: 28px;
+    padding: 0 26px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .footer p{
+    margin:0;
+    font-size:0.74rem;
+    color: var(--text-faint);
+    line-height:1.5;
+  }
+
+  @media (min-width:520px){
+    .day-title{ font-size:2.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header" id="header">
+    <div class="header-top">
+      <div class="eyebrow-line">Dept. of EEE, D.U. — <strong>2nd Year, 1st Semester</strong></div>
+      <div class="clock" id="clock"></div>
+    </div>
+    <h1 class="day-title" id="dayTitle">Sunday</h1>
+    <div class="day-sub" id="daySub">4 classes</div>
+  </div>
+
+  <div class="day-nav" id="dayNav"></div>
+
+  <div class="group-row">
+    <span class="label">Lab group: <b id="groupLabel">A</b></span>
+    <div class="segmented" id="groupToggle">
+      <button data-group="A">Group A</button>
+      <button data-group="B">Group B</button>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <div class="footer">
+    <p>All theory classes — New Academic Building, 14th floor.</p>
+    <p>Routine effective from September 6, 2026.</p>
+  </div>
+</div>
+
+<script>
+  const ICONS = {
+    person: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path></svg>`,
+    pin: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>`
+  };
+
+  const teachers = {
+    MHR: "Md. Habibur Rahman",
+    ZMPS: "Z. M. Parvez Sazzad",
+    SMU: "Saeed Mahmud Ullah",
+    MJR: "Mohammad Junaebur Rashid",
+    SI: "Sharnali Islam",
+    KA: "Khaleda Ali",
+    MSP: "Md. Shahin Parvej",
+    IHS: "Imran Hossain Sabuj",
+    MMH: "Md. Motaleb Hossain"
+  };
+
+  const TYPE_STYLE = {
+    EEE: { accent: "var(--eee)", bg: "var(--eee-bg)" },
+    MAT: { accent: "var(--mat)", bg: "var(--mat-bg)" },
+    LAB: { accent: "var(--lab)", bg: "var(--lab-bg)" }
+  };
+
+  const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const activeDays = [0,1,2,3,4]; // Fri/Sat hidden from nav per routine
+
+  const routine = {
+    0: [
+      { time:"08:30 - 09:55", code:"0714-EEE-2101", name:"Analog Electronics I", teacher:"MHR", type:"EEE" },
+      { time:"10:00 - 11:25", code:"0714-EEE-2103", name:"Digital Electronics", teacher:"SI", type:"EEE" },
+      { time:"11:30 - 12:55", code:"0714-EEE-2109", name:"Signals and Systems", teacher:"ZMPS", type:"EEE" },
+      { time:"01:30 - 04:30", type:"LAB", group:{
+          A:{ code:"0714-EEE-2102", name:"Circuit Simulation Lab", teacher:"MJR, IHS", room:"Computer Lab, Room 206" },
+          B:null
+      }}
+    ],
+    1: [
+      { time:"08:30 - 09:55", code:"0713-EEE-2107", name:"Electromechanical Energy Conversion I", teacher:"MSP", type:"EEE" },
+      { time:"10:00 - 11:25", code:"0714-EEE-2109", name:"Signals and Systems", teacher:"ZMPS", type:"EEE" }
+    ],
+    2: [
+      { time:"08:30 - 09:55", code:"0714-EEE-2101", name:"Analog Electronics I", teacher:"MHR", type:"EEE" },
+      { time:"10:00 - 11:25", code:"0714-EEE-2103", name:"Digital Electronics", teacher:"SI", type:"EEE" },
+      { time:"11:30 - 12:55", code:"0541-MAT-2111", name:"Ordinary and Partial Differential Equations", teacher:"MMH", type:"MAT" },
+      { time:"01:30 - 04:30", type:"LAB", group:{
+          A:{ code:"0714-EEE-2104", name:"Digital Electronics Lab", teacher:"SI, KA", room:"2nd Year Lab, Room 301" },
+          B:{ code:"0714-EEE-2102", name:"Circuit Simulation Lab", teacher:"MJR, IHS", room:"Computer Lab, Room 206" }
+      }}
+    ],
+    3: [
+      { time:"08:30 - 09:55", code:"0714-EEE-2105", name:"Solid State Physics", teacher:"SMU", type:"EEE" },
+      { time:"10:00 - 11:25", code:"0713-EEE-2107", name:"Electromechanical Energy Conversion I", teacher:"MSP", type:"EEE" },
+      { time:"01:30 - 04:30", type:"LAB", group:{
+          A:null,
+          B:{ code:"0714-EEE-2104", name:"Digital Electronics Lab", teacher:"SI, KA", room:"2nd Year Lab, Room 301" }
+      }}
+    ],
+    4: [
+      { time:"08:30 - 09:55", code:"0541-MAT-2111", name:"Ordinary and Partial Differential Equations", teacher:"MMH", type:"MAT" },
+      { time:"10:00 - 11:25", code:"0714-EEE-2105", name:"Solid State Physics", teacher:"SMU", type:"EEE" }
+    ]
+  };
+
+  let currentDay = 0;
+  let currentGroup = "A";
+
+  function resolveTeachers(str){
+    if(!str) return "";
+    return str.split(",").map(s => teachers[s.trim()] || s.trim()).join(" & ");
+  }
+
+  function getMinutes(str){
+    let [h,m] = str.split(":").map(Number);
+    if(h >= 1 && h <= 5) h += 12;
+    return h*60+m;
+  }
+
+  function isNow(range){
+    const now = new Date();
+    const cur = now.getHours()*60 + now.getMinutes();
+    const [s,e] = range.split("-").map(x=>x.trim());
+    return cur >= getMinutes(s) && cur < getMinutes(e);
+  }
+
+  function slotHTML(item, isToday){
+    const [start,end] = item.time.split("-").map(x=>x.trim());
+
+    // Lab slot — resolve by selected group
+    if(item.type === "LAB"){
+      const data = item.group[currentGroup];
+      if(!data){
+        return `
+          <div class="slot quiet">
+            <div class="slot-bar"></div>
+            <div class="slot-time"><span class="t-start">${start}</span><span class="t-end">${end}</span></div>
+            <div class="slot-body">
+              <div class="slot-name">No lab for Group ${currentGroup} today</div>
+            </div>
+          </div>`;
+      }
+      const style = TYPE_STYLE.LAB;
+      const live = isToday && isNow(item.time);
+      return `
+        <div class="slot ${live?'live':''}" style="--card-accent:${style.accent}">
+          <div class="slot-bar"></div>
+          <div class="slot-time"><span class="t-start">${start}</span><span class="t-end">${end}</span></div>
+          <div class="slot-body">
+            <div class="slot-top-row">
+              <span class="slot-code">${data.code}</span>
+              ${live ? `<span class="live-tag"><span class="live-dot"></span>Now</span>` : `<span class="chip" style="--chip-bg:${style.bg};--chip-color:${style.accent}">Group ${currentGroup}</span>`}
+            </div>
+            <div class="slot-name">${data.name}</div>
+            <div class="slot-meta">
+              <div class="meta-row">${ICONS.person}${resolveTeachers(data.teacher)}</div>
+              <div class="meta-row">${ICONS.pin}${data.room}</div>
+            </div>
+            ${live ? `<div style="margin-top:8px"><span class="chip" style="--chip-bg:${style.bg};--chip-color:${style.accent}">Group ${currentGroup}</span></div>` : ``}
+          </div>
+        </div>`;
+    }
+
+    // Regular slot
+    const style = TYPE_STYLE[item.type] || TYPE_STYLE.EEE;
+    const live = isToday && isNow(item.time);
+    return `
+      <div class="slot ${live?'live':''}" style="--card-accent:${style.accent}">
+        <div class="slot-bar"></div>
+        <div class="slot-time"><span class="t-start">${start}</span><span class="t-end">${end}</span></div>
+        <div class="slot-body">
+          <div class="slot-top-row">
+            <span class="slot-code">${item.code}</span>
+            ${live ? `<span class="live-tag"><span class="live-dot"></span>Now</span>` : ``}
+          </div>
+          <div class="slot-name">${item.name}</div>
+          <div class="slot-meta">
+            <div class="meta-row">${ICONS.person}${resolveTeachers(item.teacher)}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function dominantColor(dayIdx){
+    const items = routine[dayIdx] || [];
+    for(const it of items){
+      if(it.type === "MAT") return "#e7a94c";
+      if(it.type === "LAB") continue;
+    }
+    return "#5b8def";
+  }
+
+  function render(dayIdx){
+    currentDay = dayIdx;
+    document.querySelectorAll(".day-btn").forEach(b=>{
+      b.classList.toggle("active", parseInt(b.dataset.day) === dayIdx);
+    });
+
+    document.getElementById("dayTitle").textContent = days[dayIdx];
+    document.getElementById("header").style.setProperty("--blob-color", dominantColor(dayIdx));
+
+    const items = routine[dayIdx];
+    const timeline = document.getElementById("timeline");
+    const todayIdx = new Date().getDay();
+    const isToday = dayIdx === todayIdx;
+
+    if(!items || items.length === 0){
+      document.getElementById("daySub").textContent = "No classes";
+      timeline.innerHTML = "";
+      timeline.insertAdjacentHTML("beforebegin", `<div class="empty-day"><div class="big">Nothing scheduled</div>Enjoy the free day.</div>`);
+      return;
+    }
+
+    document.querySelectorAll(".empty-day").forEach(e=>e.remove());
+
+    const count = items.filter(it => it.type !== "LAB" || it.group[currentGroup]).length;
+    document.getElementById("daySub").textContent = `${count} class${count===1?'':'es'}`;
+
+    timeline.innerHTML = items.map(it => slotHTML(it, isToday)).join("");
+  }
+
+  function setGroup(g){
+    currentGroup = g;
+    document.getElementById("groupLabel").textContent = g;
+    document.querySelectorAll("#groupToggle button").forEach(b=>{
+      b.classList.toggle("active", b.dataset.group === g);
+    });
+    try{
+      window.storage && window.storage.set('labGroup', g, false).catch(()=>{});
+    }catch(e){}
+    render(currentDay);
+  }
+
+  function tickClock(){
+    const now = new Date();
+    document.getElementById("clock").textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }
+
+  async function init(){
+    const nav = document.getElementById("dayNav");
+    activeDays.forEach(d=>{
+      const btn = document.createElement("button");
+      btn.className = "day-btn";
+      btn.textContent = days[d].slice(0,3);
+      btn.dataset.day = d;
+      btn.onclick = () => render(d);
+      nav.appendChild(btn);
+    });
+
+    document.querySelectorAll("#groupToggle button").forEach(b=>{
+      b.onclick = () => setGroup(b.dataset.group);
+    });
+
+    // restore saved group preference if available
+    let savedGroup = "A";
+    try{
+      if(window.storage){
+        const res = await window.storage.get('labGroup', false);
+        if(res && res.value) savedGroup = res.value;
+      }
+    }catch(e){ /* no saved preference yet */ }
+    currentGroup = savedGroup;
+    document.getElementById("groupLabel").textContent = savedGroup;
+    document.querySelectorAll("#groupToggle button").forEach(b=>{
+      b.classList.toggle("active", b.dataset.group === savedGroup);
+    });
+
+    const now = new Date();
+    let targetDay = now.getDay();
+    if(now.getHours() >= 16) targetDay = (targetDay + 1) % 7;
+    if(!activeDays.includes(targetDay)) targetDay = 0;
+
+    render(targetDay);
+    tickClock();
+    setInterval(tickClock, 1000*30);
+    setInterval(()=>{
+      const todayIdx = new Date().getDay();
+      if(currentDay === todayIdx) render(currentDay);
+    }, 60000);
+  }
+
+  init();
+</script>
+</body>
+</html>
